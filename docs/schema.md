@@ -15,6 +15,7 @@
   },
   orders: [OrderID],
   cart: CartID,
+  balance: Number
 }
 ```
 

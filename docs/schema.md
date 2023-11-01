@@ -15,7 +15,8 @@
   },
   orders: [OrderID],
   cart: CartID,
-  balance: Number
+  balance: Number,
+  role: [VUser, Admin, CUser],
 }
 ```
 

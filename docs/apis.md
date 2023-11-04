@@ -3,9 +3,9 @@
 
 ## User Management
 
-- `POST /users/signup` For user registration.
-- `POST /users/login` For user login, returning a token for authenticated sessions.
-- `POST /users/logout` To log the user out, invalidating the session token.
+- `POST /auth/signup` For user registration.
+- `POST /auth/login` For user login, returning a token for authenticated sessions.
+- `POST /auth/logout` To log the user out, invalidating the session token.
 - \*`GET /users/profile` To fetch the profile details of the logged-in user.
 - \*`PUT /users/profile` To update user profile details.
 

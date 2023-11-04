@@ -20,14 +20,18 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docker:start": "docker-compose up -d",
     "docker:stop": "docker-compose down",
-    "docker:force": "docker-compose down -v && docker-compose up -d -V --build"
+    "docker:force": "docker-compose down -v && docker-compose up -d -V --build",
+    "docker:mongo": "docker-compose up -d mongo"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.1.1",
     "@nestjs/mapped-types": "*",
+    "@nestjs/mongoose": "^10.0.1",
     "@nestjs/platform-express": "^10.0.0",
+    "mongoose": "^7.6.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },

@@ -11,11 +11,12 @@
 
 ## Product Management
 
-- [ ] `GET /products` To fetch a list of products, possibly with filtering, sorting, and pagination.
-- [ ] `GET /products/{product_id}` To fetch the details of a specific product.
-- [ ] \*`POST /products` To add a new product.
-- [ ] \*`PUT /products/{product_id}` To update an existing product.
-- [ ] \*`DELETE /products/{product_id}` To delete a product.
+- [x] `GET /products` To fetch a list of products, possibly with filtering, sorting, and pagination.
+- [x] `GET /products/search?name={name}` To fetch the details of a specific product.
+- [x] `GET /products/{product_id}` To fetch the details of a specific product.
+- [x] \*`POST /products` To add a new product.
+- [x] \*`PUT /products/{product_id}` To update an existing product.
+- [x] \*`DELETE /products/{product_id}` To delete a product.
 - [ ] \*`POST /products/{product_id}/reviews` To add a review for a product.
 - [ ] `GET /products/{product_id}/reviews` To fetch reviews for a product.
 

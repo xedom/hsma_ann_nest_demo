@@ -33,20 +33,19 @@ import {
       return this.productsService.findOneId(_id);
     }
 
-    @Put(':product_id')
-    async update(@Param('product_id') product_id: string, @Body() productData) {
-      return this.productsService.update(product_id, productData);
+    @Put(':_id')
+    async update(@Param('_id') _id: string, @Body() productData) {
+      return this.productsService.update(_id, productData);
     }
 
     @Post()
     create(@Body() productData) {
-      console.log(productData);
       return this.productsService.create(productData);
     }
   
-    @Delete(':product_id')
-    async remove(@Param('product_id') product_id: string) {
-      return this.productsService.remove(product_id);
+    @Delete(':_id')
+    async remove(@Param('_id') _id: string) {
+      return this.productsService.remove(_id);
     }
   
   }

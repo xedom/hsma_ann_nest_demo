@@ -8,7 +8,7 @@ export enum UserRole {
 
 @Schema()
 export class User {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   username: string;
 
   @Prop({ required: true })
@@ -20,6 +20,7 @@ export class User {
   @Prop()
   profilePic: string;
 
+  // @Prop()
   // address: {
   //   street: string;
   //   city: string;
@@ -37,4 +38,4 @@ export class User {
   role: UserRole;
 }
 
-export const CatSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User);

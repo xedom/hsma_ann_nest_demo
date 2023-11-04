@@ -1,31 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-
-export type User = any;
+import { InjectModel } from '@nestjs/mongoose';
+import { User } from './schemas/user.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<User>,
+  ) {}
+
   private readonly users = [
     { userId: 1, username: 'admin', password: 'admin', email: 'admin@shop.de' },
     { userId: 2, username: 'pingu', password: 'pingu', email: 'pingu@shop.de' },
   ];
 
   create(createUserDto: CreateUserDto) {
+    this.userModel.create(createUserDto);
+
     return `This action adds a new user: ${JSON.stringify(createUserDto)}`;
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.userModel.find().exec();
   }
 
   async findOne(username: string): Promise<User | undefined> {
-    return this.users.find((user) => user.username === username);
+    const user = await this.userModel.findOne({ username: username }).exec();
+
+    return user[0];
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
     // eslint-disable-next-line prettier/prettier
-    return `This action updates a #${id} user: ${JSON.stringify(updateUserDto)}`;
+    return `This action updates a #${id} user: ${JSON.stringify(
+      updateUserDto,
+    )}`;
   }
 
   remove(id: string) {

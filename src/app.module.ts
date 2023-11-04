@@ -7,7 +7,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 
 ConfigModule.forRoot();
-console.log(process.env.MONGO_URI);
 
 @Module({
   imports: [

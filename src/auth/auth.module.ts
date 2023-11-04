@@ -12,7 +12,7 @@ import { jwtConstants } from './constants';
       // more info on https://github.com/nestjs/jwt/blob/master/README.md
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '600s' },
+      signOptions: { expiresIn: '10800s' }, // TODO: change this to 1h
     }),
   ],
   providers: [AuthService],

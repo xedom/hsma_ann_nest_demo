@@ -1,4 +1,4 @@
-\*: must be logged in as user
+\*: must be logged in as user\
 \*\*: must be logged in as admin
 
 ## User Management

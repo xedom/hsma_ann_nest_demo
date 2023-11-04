@@ -16,10 +16,9 @@ export class UsersService {
     { userId: 2, username: 'pingu', password: 'pingu', email: 'pingu@shop.de' },
   ];
 
-  create(createUserDto: CreateUserDto) {
-    this.userModel.create(createUserDto);
-
-    return `This action adds a new user: ${JSON.stringify(createUserDto)}`;
+  create(createUserDto: CreateUserDto): Promise<User> {
+    const newUser = this.userModel.create(createUserDto);
+    return newUser;
   }
 
   findAll() {
@@ -28,8 +27,7 @@ export class UsersService {
 
   async findOne(username: string): Promise<User | undefined> {
     const user = await this.userModel.findOne({ username: username }).exec();
-
-    return user[0];
+    return user;
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {

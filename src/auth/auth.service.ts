@@ -32,6 +32,12 @@ export class AuthService {
       role: UserRole.VUser,
     });
 
-    console.log(newUser);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const userZio = {
+      username: newUser.username,
+      email: newUser.email,
+    };
+
+    return userZio;
   }
 }

@@ -29,7 +29,7 @@ export class UsersService {
   async findOne(username: string): Promise<User | undefined> {
     const user = await this.userModel.findOne({ username: username }).exec();
 
-    return user[0];
+    return user;
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {

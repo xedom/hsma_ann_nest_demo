@@ -1,17 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Address, AddressSchema } from './address.schema';
+import { Document, Types } from 'mongoose';
+
+// import { Order } from './order.schema';
+// import { Cart } from './cart.schema';
 
 export enum UserRole {
-  Admin = 'admin',
-  VUser = 'vuser',
-  CUser = 'cuser',
+  ADMIN = 'admin',
+  VENDOR = 'vendor',
+  USER = 'user',
 }
+
+export type UserDocument = User & Document;
 
 @Schema()
 export class User {
   @Prop({ required: true, unique: true })
   username: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ required: true })
@@ -20,21 +27,19 @@ export class User {
   @Prop()
   profilePic: string;
 
-  // @Prop()
-  // address: {
-  //   street: string;
-  //   city: string;
-  //   state: string;
-  //   zip: string;
-  //   country: string;
-  // };
-  // orders: [OrderID];
-  // cart: CartID;
+  @Prop({ type: AddressSchema })
+  address: Address;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Order' }] })
+  orders: Types.Array<Types.ObjectId>;
+
+  @Prop({ type: Types.ObjectId, ref: 'Cart' })
+  cart: Types.ObjectId;
 
   @Prop()
   balance: number;
 
-  @Prop()
+  @Prop({ type: String, enum: UserRole })
   role: UserRole;
 }
 

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schemas/user.schema';
+import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
 
 @Injectable()
@@ -10,11 +10,6 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
-
-  private readonly users = [
-    { userId: 1, username: 'admin', password: 'admin', email: 'admin@shop.de' },
-    { userId: 2, username: 'pingu', password: 'pingu', email: 'pingu@shop.de' },
-  ];
 
   create(createUserDto: CreateUserDto): Promise<User> {
     const newUser = this.userModel.create(createUserDto);
@@ -25,7 +20,7 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  async findOne(username: string): Promise<User | undefined> {
+  async findOne(username: string): Promise<UserDocument | undefined> {
     const user = await this.userModel.findOne({ username: username }).exec();
     return user;
   }

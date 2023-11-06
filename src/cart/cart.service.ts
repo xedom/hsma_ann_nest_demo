@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cart } from './schemas/cart.schema';
 import { Model, Types } from 'mongoose';
-import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { ItemDto } from './dto/item.dto copy';
 
@@ -12,16 +11,9 @@ export class CartService {
     @InjectModel(Cart.name) private readonly cartModel: Model<Cart>,
   ) {}
 
-  
-  async create(createCartDto: CreateCartDto) {
-      this.cartModel.create(createCartDto);
-  
-      return `This action creates a new cart-item: ${JSON.stringify(createCartDto)}`;
+  async create(cart: Cart) {
+    return this.cartModel.create(cart);
   }
-  
-    remove(id: string) {
-      return `This action removes a item from user cart`;
-    }
 
   async findAll() {
     return this.cartModel.find().exec();

@@ -25,7 +25,7 @@ export class CartController {
 
   @UseGuards(AuthGuard)
   @Post('items')
-  findOne(@Request() req, @Body() itemDto: ItemDto | ItemDto[]) {
+  async findOne(@Request() req, @Body() itemDto: ItemDto | ItemDto[]) {
     console.log(req.user);
     return this.cartService.addItems(
       req.user.sub,
@@ -35,12 +35,12 @@ export class CartController {
 
   //gibt alle Carts von allen Usern zurück
   @Get()
-  findAll() {
+  async findAll() {
     return this.cartService.findAll();
   }
 
-  @Put()
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateCartDto){
+  @Put('items/:id')
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateCartDto) {
     return this.cartService.update(id, updateUserDto);
   }
 }

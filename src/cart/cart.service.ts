@@ -13,11 +13,11 @@ export class CartService {
   ) {}
 
   
-    create(createCartDto: CreateCartDto) {
+  async create(createCartDto: CreateCartDto) {
       this.cartModel.create(createCartDto);
   
       return `This action creates a new cart-item: ${JSON.stringify(createCartDto)}`;
-    }
+  }
   
     remove(id: string) {
       return `This action removes a item from user cart`;

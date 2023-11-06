@@ -5,6 +5,7 @@ First copy the `.env.example` file to `.env` and change the values if needed.
 Containers:
 
 - nest-api: http://localhost:3000
+- swagger: http://localhost:3000/api
 - mongo: http://localhost:27017
 - mongo-express: http://localhost:8081 (user: admin, password: pass)
 

@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module';
 import { ProductsModule } from './products/products.module';
 import { ThrottlerModule } from "@nestjs/throttler";
+import { OrdersModule } from './orders/orders.module';
 
 ConfigModule.forRoot();
 
@@ -25,6 +26,7 @@ ConfigModule.forRoot();
       ttl: 60000,
       limit: 10,
     }]),
+    OrdersModule,
   ],
   controllers: [
     AppController

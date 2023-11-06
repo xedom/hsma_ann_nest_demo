@@ -1,19 +1,16 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Request,
-  Query,
+  Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('users')
 export class UsersController {
@@ -23,36 +20,44 @@ export class UsersController {
   @Get('profile')
   async profile(@Request() req) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...user } = await this.usersService.findOne(
-      req.user.username,
-    );
-    return user;
+    return this.usersService.getProfile(req.user.sub);
   }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @UseGuards(AuthGuard)
+  @Put('profile')
+  async updateProfile(
+    @Request() req,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    const userID = req.user.sub;
+    return this.usersService.updateProfile(userID, updateProfileDto);
   }
 
-  @Get('id')
-  findOne(@Query('id') id: string) {
-    console.log('findOne');
-    return this.usersService.findOne(id);
+  @Get(':username')
+  getUser(@Param('username') username: string) {
+    return this.usersService.getUser(username);
   }
 
   @Get()
-  findAll() {
-    console.log('findAll');
-    return this.usersService.findAll();
+  getUsers() {
+    return this.usersService.getUsers();
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
-  }
+  // @UseGuards(AuthGuard)
+  // @Put(':id')
+  // update(
+  //   @Request() req,
+  //   @Param('id') id: string,
+  //   @Body() updateUserDto: UpdateUserDto,
+  // ) {
+  //   console.log('update user', req.user);
+  //   return this.usersService.update(id, updateUserDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @UseGuards(AuthGuard)
+  @Delete(':id') // TODO: add auth guard - only admin can delete users
+  remove(@Request() req, @Param('id') id: string) {
+    console.log('remove user', req.user);
     return this.usersService.remove(id);
   }
 }

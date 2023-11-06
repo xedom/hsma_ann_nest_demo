@@ -44,12 +44,9 @@ export class AuthService {
       role: UserRole.USER,
     };
 
-    const createdUser = await this.usersService.create(newUser);
+    const { username, email } = await this.usersService.createWithCart(newUser);
 
-    return {
-      username: createdUser.username,
-      email: createdUser.email,
-    };
+    return { username, email };
   }
 
   async logout(token: string): Promise<any> {

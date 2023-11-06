@@ -1,18 +1,17 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
-  Patch,
-  Post,
   UseGuards,
   Request,
   Param,
+  Put,
+  Post,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CartService } from './cart.service';
-import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
+import { ItemDto } from './dto/item.dto copy';
 
 @Controller('cart')
 export class CartController {
@@ -21,33 +20,21 @@ export class CartController {
   @UseGuards(AuthGuard)
   @Get()
   async getCart(@Request() req) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const cart = await this.cartService.findOne(req.user.sub);
-    return cart;
+    return await this.cartService.findOne(req.user.sub);
   }
 
-  @Post()
-  create(@Body() createUserDto: CreateCartDto) {
-    return this.cartService.create(createUserDto);
+  @UseGuards(AuthGuard)
+  @Post('items')
+  findOne(@Request() req, @Body() itemDto: ItemDto | ItemDto[]) {
+    console.log(req.user);
+    return this.cartService.addItems(
+      req.user.sub,
+      Array.isArray(itemDto) ? itemDto : [itemDto],
+    );
   }
 
-  @Get()
-  findAll() {
-    return this.cartService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findOne(id);
-  }
-
-  @Patch(':id')
+  @Put('items/:id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateCartDto) {
     return this.cartService.update(id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartService.remove(id);
   }
 }

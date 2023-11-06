@@ -30,7 +30,7 @@ export class UsersService {
       total: 0,
     });
     const updateUser = await this.userModel.findByIdAndUpdate(user._id, {
-      cart: cart._id.toString(),
+      cart: cart._id,
     });
 
     return updateUser;

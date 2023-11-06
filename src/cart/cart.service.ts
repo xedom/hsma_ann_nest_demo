@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cart } from './schemas/cart.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 
@@ -24,7 +24,8 @@ export class CartService {
 
     //gibt Cart des eingeloggten Users zurueck
     async findOne(userID: string): Promise<Cart | undefined> {
-      const cart = await this.cartModel.findOne({ userID: userID }).exec();
+      const cart = await this.cartModel.findOne({ username: userID }).exec();
+      console.log(cart)
       return cart;
     }
   

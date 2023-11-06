@@ -8,6 +8,7 @@ import {
   UseGuards,
   Request,
   Param,
+  Put,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CartService } from './cart.service';
@@ -31,18 +32,14 @@ export class CartController {
     return this.cartService.create(createUserDto);
   }
 
+  //gibt alle Carts von allen Usern zurück
   @Get()
   findAll() {
     return this.cartService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findOne(id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateCartDto) {
+  @Put()
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateCartDto){
     return this.cartService.update(id, updateUserDto);
   }
 

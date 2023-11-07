@@ -30,10 +30,10 @@
 
 ## Order Management
 
-- [ ] \*`GET /orders` To fetch a list of orders made by the user.
-- [ ] \*`GET /orders/{order_id}` To fetch the details of a specific order.
-- [ ] \*`PUT /orders/{order_id}/cancel` To cancel an order (if applicable).
-- [ ] \*`PUT /orders/{order_id}/return` To return an order (if applicable).
+- [x] \*`GET /orders` To fetch a list of orders made by the user.
+- [x] \*`GET /orders/{order_id}` To fetch the details of a specific order.
+- [x] \*`PUT /orders/{order_id}/cancel` To cancel an order (if applicable).
+- [x] \*`PUT /orders/{order_id}/return` To return an order (if applicable).
 
 ## Admin-Specific Endpoints
 

@@ -9,6 +9,10 @@ export class OrdersService {
     @InjectModel(Order.name) private readonly orderModel: Model<Order>,
   ) {}
 
+  async create(order: Order) {
+    return this.orderModel.create(order);
+  }
+
   async getOrders(userID: string) {
     return this.orderModel.find({ userID: new Types.ObjectId(userID) }).exec();
   }

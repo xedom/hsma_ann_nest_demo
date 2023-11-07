@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 @Schema()
 export class Item {
-  @Prop({ required: true }) // TODO: change to @Prop({ required: true, type: Types.ObjectId, ref: 'Product' })
-  productID: string; // TODO: change to ObjectId
+  @Prop({ required: true, type: Types.ObjectId, ref: 'Product' })
+  productID: Types.ObjectId;
 
   @Prop({ required: true, default: 1 })
   quantity: number;

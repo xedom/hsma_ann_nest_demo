@@ -24,9 +24,9 @@
 
 - [x] \*`GET /cart` To fetch the logged user shopping cart.
 - [x] \*`POST /cart/items` To add a product to the cart.
-- [ ] \*`PUT /cart/items/{item_id}` To update the quantity of a product in the cart.
-- [ ] \*`DELETE /cart/items/{item_id}` To remove a product from the cart.
-- [ ] \*`POST /cart/checkout` To initiate a payment for an order.
+- [x] \*`PUT /cart/items/{item_id}` To update the quantity of a product in the cart.
+- [x] \*`DELETE /cart/items/{item_id}` To remove a product from the cart.
+- [x] \*`POST /cart/checkout` To initiate a payment for an order.
 
 ## Order Management
 

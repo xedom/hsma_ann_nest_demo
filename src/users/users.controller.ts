@@ -7,10 +7,14 @@ import {
   UseGuards,
   Request,
   Put,
+  Post,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -59,5 +63,14 @@ export class UsersController {
   remove(@Request() req, @Param('id') id: string) {
     console.log('remove user', req.user);
     return this.usersService.remove(id);
+  }
+
+  @Post('settings') // TODO: work in progress
+  @UseInterceptors(FileInterceptor('image'))
+  uploadFile(@UploadedFile() image, @Body() body) {
+    console.log('image', image);
+    console.log('body', body);
+
+    return { response: 'Settings updated' };
   }
 }

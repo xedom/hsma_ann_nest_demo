@@ -10,6 +10,8 @@ import {
   Post,
   UseInterceptors,
   UploadedFile,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -68,9 +70,22 @@ export class UsersController {
   @Post('settings') // TODO: work in progress
   @UseInterceptors(FileInterceptor('image'))
   uploadFile(@UploadedFile() image, @Body() body) {
-    console.log('image', image);
-    console.log('body', body);
+    const base64Image = image?.buffer.toString('base64');
+    const userInfo = body;
+    console.log('base64Image', base64Image);
+    console.log('userInfo', userInfo);
 
-    return { response: 'Settings updated' };
+    if (!image) {
+      throw new HttpException(
+        'TEST error: image is null',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return {
+      statusCode: 200,
+      message: 'User updated',
+      image: base64Image,
+    };
   }
 }

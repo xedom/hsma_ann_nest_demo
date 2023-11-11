@@ -36,7 +36,7 @@ export class AuthService {
       username: user.username,
       email: user.email,
       password: user.password,
-      profilePic: '',
+      profilePic: null,
       address: { street: '', city: '', state: '', zip: '', country: '' },
       orders: [] as Types.Array<Types.ObjectId>,
       cart: null,

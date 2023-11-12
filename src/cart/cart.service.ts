@@ -62,7 +62,7 @@ export class CartService {
 
   async checkout(userID: string) {
     const cart = await this.findOne(userID);
-    if (cart) return null;
+    if (!cart) return { statusCode: 404, message: 'Cart not found' };
 
     const newOrder: Order = {
       userID: new Types.ObjectId(userID),

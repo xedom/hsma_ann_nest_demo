@@ -27,6 +27,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('register')
   signUp(@Body() registerDto: RegisterUserDto) {
+    console.log('registerDto', registerDto);
     return this.authService.signUp(registerDto);
   }
 
@@ -35,6 +36,7 @@ export class AuthController {
   @Post('logout')
   async logout(@Request() req) {
     const token = req.headers.authorization.split(' ')[1]; // TODO check if authorization header is present
+    console.log('logout', token);
     return this.authService.logout(token);
   }
 }

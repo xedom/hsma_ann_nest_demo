@@ -51,7 +51,7 @@ export class AuthService {
 
   async logout(token: string): Promise<any> {
     const decoded = await this.jwtService.decode(token);
-    if (this.isTokenBlacklisted(token)) throw new UnauthorizedException();
+    if (!this.isTokenBlacklisted(token)) throw new UnauthorizedException();
 
     const blacklistedToken = new this.blacklistedTokenModel({
       token,
@@ -66,6 +66,8 @@ export class AuthService {
     const tokenFound = await this.blacklistedTokenModel
       .findOne({ token })
       .exec();
+
+    console.log('tokenFound', tokenFound);
     if (tokenFound) {
       // Check if the current date is before the token's expiration date
       if (new Date() < tokenFound.expires) {

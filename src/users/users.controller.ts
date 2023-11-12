@@ -70,7 +70,7 @@ export class UsersController {
   @Post('settings') // TODO: work in progress
   @UseInterceptors(FileInterceptor('image'))
   uploadFile(@UploadedFile() image, @Body() body) {
-    const base64Image = image?.buffer.toString('base64');
+    const base64Image: string = image?.buffer.toString('base64');
     const userInfo = body;
     console.log('base64Image', base64Image);
     console.log('userInfo', userInfo);

@@ -15,7 +15,13 @@ export class AuthService {
     private readonly blacklistedTokenModel: Model<BlacklistedToken>,
   ) {}
 
-  async signIn(username: string, pass: string): Promise<any> {
+  async signIn(
+    username: string,
+    pass: string,
+  ): Promise<{
+    user: { username: string; role: string; sub: string };
+    access_token: string;
+  }> {
     const user = await this.usersService.findOne(username);
     if (user?.password !== pass) {
       throw new UnauthorizedException();

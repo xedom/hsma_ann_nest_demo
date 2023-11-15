@@ -1,4 +1,3 @@
-import { ProductsController } from './products/products.controller';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,7 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module';
 import { ProductsModule } from './products/products.module';
-import { ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerModule } from '@nestjs/throttler';
 import { OrdersModule } from './orders/orders.module';
 
 ConfigModule.forRoot();
@@ -19,18 +18,18 @@ ConfigModule.forRoot();
     CartModule,
     AuthModule,
     ProductsModule,
-    ConfigModule.forRoot(), //environment variables 
+    ConfigModule.forRoot(), //environment variables
     CartModule,
     MongooseModule.forRoot(process.env.MONGO_URI),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 10,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     OrdersModule,
   ],
-  controllers: [
-    AppController
-  ],
+  controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

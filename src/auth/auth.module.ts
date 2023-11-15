@@ -9,9 +9,11 @@ import {
   BlacklistedToken,
   BlacklistedTokenSchema,
 } from './schema/BlacklistedToken.schema';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     UsersModule,
     JwtModule.register({
       // more info on https://github.com/nestjs/jwt/blob/master/README.md

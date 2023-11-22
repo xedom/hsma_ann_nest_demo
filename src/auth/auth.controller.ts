@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Redirect,
   Request,
   Res,
   UseGuards,
@@ -26,6 +27,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(ThrottlerGuard)
+  @Redirect('https://ann.xed.im', 301)
   @Post('login')
   async signIn(
     @Res({ passthrough: true }) res: Response,

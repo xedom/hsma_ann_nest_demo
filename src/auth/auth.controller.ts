@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -27,7 +28,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(ThrottlerGuard)
-  @Redirect('https://ann.xed.im', 301)
+  @Redirect('https://ann.xed.im', 301) // TODO: remove hardcoded url
   @Post('login')
   async signIn(
     @Res({ passthrough: true }) res: Response,
@@ -65,10 +66,24 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  @Post('logout')
-  async logout(@Request() req) {
-    const token = req.headers.authorization.split(' ')[1]; // TODO check if authorization header is present
-    console.log('logout', token);
+  @Redirect('https://ann.xed.im/login', 301) // TODO: remove hardcoded url
+  @Get('logout')
+  async logout(@Request() req, @Res({ passthrough: true }) res: Response) {
+    // get token from cookie
+    const token = req.cookies['user_jwt'];
+    console.log('logout for', token);
+
+    // remove token from cookie
+    res.cookie('user_jwt', '', {
+      expires: new Date(Date.now()),
+      httpOnly: this.configService.get('COOKIE_HTTP_ONLY'),
+      secure: this.configService.get('COOKIE_SECURE'),
+      domain: this.configService.get('COOKIE_DOMAIN'),
+      sameSite: this.configService.get('COOKIE_SAME_SITE'),
+    });
+
+    // invalidate token
+    // const token = req.headers.authorization.split(' ')[1]; // TODO check if authorization header is present
     return this.authService.logout(token);
   }
 }

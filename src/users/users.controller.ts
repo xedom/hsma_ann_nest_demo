@@ -67,12 +67,14 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
+  @UseGuards(AuthGuard)
   @Post('settings') // TODO: work in progress
   @UseInterceptors(FileInterceptor('image'))
-  uploadFile(@UploadedFile() image, @Body() body) {
+  // @Redirect('http://ann.xed.im/settings', 301) // TODO: redirect to settings page
+  uploadFile(@Request() req, @UploadedFile() image, @Body() body) {
     const base64Image: string = image?.buffer.toString('base64');
-    const userInfo = body;
-    console.log('base64Image', base64Image);
+    const userInfo = body; // TODO: save to db
+
     console.log('userInfo', userInfo);
 
     if (!image) {
@@ -81,6 +83,10 @@ export class UsersController {
         HttpStatus.FORBIDDEN,
       );
     }
+
+    this.usersService.updateProfile(req.user.sub, {
+      profilePic: base64Image,
+    });
 
     return {
       statusCode: 200,

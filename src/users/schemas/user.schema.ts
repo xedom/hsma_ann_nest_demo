@@ -25,7 +25,7 @@ export class User {
   password: string;
 
   @Prop()
-  profilePic: Buffer;
+  profilePic: string; // TODO: change to buffer and save image type
 
   @Prop({ type: AddressSchema })
   address: Address;

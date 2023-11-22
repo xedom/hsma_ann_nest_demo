@@ -59,6 +59,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('register')
+  @Redirect('https://ann.xed.im/login', 301) // TODO: remove hardcoded url
   signUp(@Body() registerDto: RegisterUserDto) {
     console.log('registerDto', registerDto);
     return this.authService.signUp(registerDto);

@@ -71,7 +71,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Post('settings') // TODO: work in progress
   @UseInterceptors(FileInterceptor('image'))
-  @Redirect('http://ann.xed.im/settings', 301) // TODO: redirect to settings page
+  @Redirect('https://ann.xed.im/settings', 301) // TODO: redirect to settings page
   uploadFile(@Request() req, @UploadedFile() image, @Body() body) {
     const base64Image: string = image?.buffer.toString('base64');
     const userInfo = body; // TODO: save to db

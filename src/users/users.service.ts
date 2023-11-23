@@ -5,6 +5,7 @@ import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CartService } from 'src/cart/cart.service';
+import * as bcrypt from 'bcrypt';
 
 const publicUserFields = {
   _id: 1,
@@ -73,5 +74,15 @@ export class UsersService {
       .findByIdAndUpdate(id, updateProfileDto, { new: true })
       .select(selectedFields)
       .exec();
+  }
+
+  async hashPassword(password: string) {
+    const salt = await bcrypt.genSalt(10); // TODO replace with env var
+    console.log('-- salt --', salt);
+    return bcrypt.hash(password, 10); // TODO replace rounds with salt
+  }
+
+  async comparePasswords(password: string, hash: string) {
+    return await bcrypt.compare(password, hash);
   }
 }

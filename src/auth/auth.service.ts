@@ -23,7 +23,8 @@ export class AuthService {
     access_token: string;
   }> {
     const user = await this.usersService.findOne(username);
-    if (user?.password !== pass) {
+    // if (user?.password !== pass) { throw new UnauthorizedException(); }
+    if (!this.usersService.comparePasswords(pass, user.password)) {
       throw new UnauthorizedException();
     }
 
@@ -38,10 +39,12 @@ export class AuthService {
   }
 
   async signUp(user: Partial<User>): Promise<any> {
+    const hashedPassword = await this.usersService.hashPassword(user.password);
+
     const newUser: Omit<User, '_id'> = {
       username: user.username,
       email: user.email,
-      password: user.password,
+      password: hashedPassword,
       profilePic: null,
       address: { street: '', city: '', state: '', zip: '', country: '' },
       orders: [] as Types.Array<Types.ObjectId>,

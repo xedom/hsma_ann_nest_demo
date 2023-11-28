@@ -28,7 +28,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(ThrottlerGuard)
-  @Redirect('https://ann.xed.im', 301) // TODO: remove hardcoded url
+  @Redirect()
   @Post('login')
   async signIn(
     @Res({ passthrough: true }) res: Response,
@@ -41,38 +41,51 @@ export class AuthController {
 
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
-    if (user.access_token) {
-      // source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
-      res.cookie('user_jwt', user.access_token, {
-        expires: new Date(
-          Date.now() + parseInt(this.configService.get('COOKIE_EXPIRES')),
-        ),
-        httpOnly: this.configService.get('COOKIE_HTTP_ONLY'),
-        secure: this.configService.get('COOKIE_SECURE'),
-        domain: this.configService.get('COOKIE_DOMAIN'),
-        sameSite: this.configService.get('COOKIE_SAME_SITE'),
-      });
-    }
+    if (!user.access_token)
+      throw new HttpException(
+        'Server error while logging in',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
 
-    return user;
+    // source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
+    const cookieOptions = {
+      expires: new Date(
+        Date.now() + parseInt(this.configService.get('COOKIE_EXPIRES')),
+      ),
+      httpOnly: this.configService.get('COOKIE_HTTP_ONLY'),
+      secure: this.configService.get('COOKIE_SECURE'),
+      domain: this.configService.get('COOKIE_DOMAIN'),
+      sameSite: this.configService.get('COOKIE_SAME_SITE'),
+    };
+
+    res.cookie('user_jwt', user.access_token, cookieOptions);
+
+    return {
+      ...user,
+      statusCode: HttpStatus.PERMANENT_REDIRECT,
+      url: process.env.FRONTEND_URL,
+    };
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('register')
-  @Redirect('https://ann.xed.im/login', 301) // TODO: remove hardcoded url
-  signUp(@Body() registerDto: RegisterUserDto) {
+  @Redirect()
+  async signUp(@Body() registerDto: RegisterUserDto) {
     console.log('registerDto', registerDto);
-    return this.authService.signUp(registerDto);
+    return {
+      response: await this.authService.signUp(registerDto),
+      statusCode: HttpStatus.PERMANENT_REDIRECT,
+      url: process.env.FRONTEND_URL + '/login',
+    };
   }
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  @Redirect('https://ann.xed.im/login', 301) // TODO: remove hardcoded url
+  @Redirect()
   @Get('logout')
   async logout(@Request() req, @Res({ passthrough: true }) res: Response) {
     // get token from cookie
     const token = req.cookies['user_jwt'];
-    console.log('logout for', token);
 
     // remove token from cookie
     res.cookie('user_jwt', '', {
@@ -83,8 +96,10 @@ export class AuthController {
       sameSite: this.configService.get('COOKIE_SAME_SITE'),
     });
 
-    // invalidate token
-    // const token = req.headers.authorization.split(' ')[1]; // TODO check if authorization header is present
-    return this.authService.logout(token);
+    return {
+      response: await this.authService.logout(token),
+      statusCode: HttpStatus.PERMANENT_REDIRECT,
+      url: process.env.FRONTEND_URL + '/login',
+    };
   }
 }

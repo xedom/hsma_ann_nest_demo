@@ -2,17 +2,15 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User, UserRole } from 'src/users/schemas/user.schema';
-import { Model, Types } from 'mongoose';
-import { BlacklistedToken } from './schema/BlacklistedToken.schema';
-import { InjectModel } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
+import { TokenBlacklistService } from 'src/token-blacklist/token-blacklist.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    @InjectModel(BlacklistedToken.name)
-    private readonly blacklistedTokenModel: Model<BlacklistedToken>,
+    private tokenBlacklistService: TokenBlacklistService,
   ) {}
 
   async signIn(
@@ -22,69 +20,75 @@ export class AuthService {
     user: { username: string; role: string; sub: string };
     access_token: string;
   }> {
-    const user = await this.usersService.findOne(username);
-    // if (user?.password !== pass) { throw new UnauthorizedException(); }
-    if (!this.usersService.comparePasswords(pass, user.password)) {
-      throw new UnauthorizedException();
-    }
-
-    const payload = {
-      username: user.username,
-      role: user.role,
-      sub: user._id.toString(),
-    };
-    const access_token = await this.jwtService.signAsync(payload);
-
-    return { user: payload, access_token };
-  }
-
-  async signUp(user: Partial<User>): Promise<any> {
-    const hashedPassword = await this.usersService.hashPassword(user.password);
-
-    const newUser: Omit<User, '_id'> = {
-      username: user.username,
-      email: user.email,
-      password: hashedPassword,
-      profilePic: null,
-      address: { street: '', city: '', state: '', zip: '', country: '' },
-      orders: [] as Types.Array<Types.ObjectId>,
-      cart: null,
-      balance: 0,
-      role: UserRole.USER,
-    };
-
-    const { username, email } = await this.usersService.createWithCart(newUser);
-
-    return { username, email };
-  }
-
-  async logout(token: string): Promise<any> {
-    const decoded = await this.jwtService.decode(token);
-    if (!this.isTokenBlacklisted(token)) throw new UnauthorizedException();
-
-    const blacklistedToken = new this.blacklistedTokenModel({
-      token,
-      expires: new Date(decoded['exp'] * 1000),
-    });
-    await blacklistedToken.save();
-    return 'Logged out successfully';
-  }
-
-  async isTokenBlacklisted(token: string): Promise<boolean> {
-    // Search for the token in your storage to see if it's been blacklisted
-    const tokenFound = await this.blacklistedTokenModel
-      .findOne({ token })
-      .exec();
-
-    console.log('tokenFound', tokenFound);
-    if (tokenFound) {
-      // Check if the current date is before the token's expiration date
-      if (new Date() < tokenFound.expires) {
-        return true; // Token is blacklisted and still valid (not expired)
+    try {
+      const user = await this.usersService.findOne(username);
+      if (!user) throw new UnauthorizedException('User not found');
+      if (!(await this.usersService.comparePasswords(pass, user.password))) {
+        throw new UnauthorizedException('Invalid credentials');
       }
-      // If the token is expired, it can be safely removed from the blacklist
-      await this.blacklistedTokenModel.deleteOne({ token }).exec();
+
+      const payload = {
+        username: user.username,
+        role: user.role,
+        sub: user._id.toString(),
+      };
+      const access_token = await this.jwtService.signAsync(payload);
+
+      return { user: payload, access_token };
+    } catch (error) {
+      throw error;
     }
-    return false; // Token is not blacklisted or it has expired
+  }
+
+  async signUp(user: Partial<User>) {
+    if (!this.usersService.validateEmail(user.email))
+      throw new UnauthorizedException('Invalid email');
+    if (!this.usersService.validateUsername(user.username))
+      throw new UnauthorizedException('Invalid username');
+    if (!this.usersService.validatePassword(user.password))
+      throw new UnauthorizedException('Invalid password');
+
+    try {
+      const hashedPassword = await this.usersService.hashPassword(
+        user.password,
+      );
+
+      const newUser: Omit<User, '_id'> = {
+        username: user.username,
+        email: user.email,
+        password: hashedPassword,
+        profilePic: null,
+        address: { street: '', city: '', state: '', zip: '', country: '' },
+        orders: [] as Types.Array<Types.ObjectId>,
+        cart: null,
+        balance: 1000,
+        role: UserRole.USER,
+      };
+
+      const { username, email } =
+        await this.usersService.createWithCart(newUser);
+
+      return { username, email };
+    } catch (error) {
+      if (error.code === 11000)
+        throw new UnauthorizedException('Username or email already exists');
+
+      throw error;
+    }
+  }
+
+  async logout(token: string) {
+    const decoded = this.jwtService.decode(token);
+
+    if (await this.tokenBlacklistService.isTokenBlacklisted(token)) {
+      throw new UnauthorizedException('Token is blacklisted');
+    }
+
+    await this.tokenBlacklistService.blacklistToken(
+      token,
+      decoded['exp'] - decoded['iat'],
+    );
+
+    return { message: 'Logout successful' };
   }
 }

@@ -9,6 +9,7 @@ import { CartModule } from './cart/cart.module';
 import { ProductsModule } from './products/products.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { OrdersModule } from './orders/orders.module';
+import { TokenBlacklistModule } from './token-blacklist/token-blacklist.module';
 
 ConfigModule.forRoot();
 
@@ -18,16 +19,12 @@ ConfigModule.forRoot();
     CartModule,
     AuthModule,
     ProductsModule,
-    ConfigModule.forRoot(), //environment variables
     CartModule,
-    MongooseModule.forRoot(process.env.MONGO_URI),
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000,
-        limit: 10,
-      },
-    ]),
     OrdersModule,
+    TokenBlacklistModule,
+    ConfigModule.forRoot(), //environment variables
+    MongooseModule.forRoot(process.env.MONGO_URI),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
   ],
   controllers: [AppController],
   providers: [AppService],

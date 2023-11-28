@@ -71,7 +71,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Post('settings') // TODO: work in progress
   @UseInterceptors(FileInterceptor('image'))
-  @Redirect('https://ann.xed.im/settings', 301) // TODO: redirect to settings page
+  @Redirect()
   uploadFile(@Request() req, @UploadedFile() image, @Body() body) {
     const base64Image: string = image?.buffer.toString('base64');
     const userInfo = body; // TODO: save to db
@@ -90,9 +90,10 @@ export class UsersController {
     });
 
     return {
-      statusCode: 200,
       message: 'User updated',
       image: base64Image,
+      statusCode: HttpStatus.PERMANENT_REDIRECT,
+      url: process.env.FRONTEND_URL + '/settings',
     };
   }
 }

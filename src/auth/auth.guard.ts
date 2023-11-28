@@ -7,12 +7,13 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { Request } from 'express';
+import { TokenBlacklistService } from 'src/token-blacklist/token-blacklist.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    // private authService: AuthService,
     private jwtService: JwtService,
+    private tokenBlacklistService: TokenBlacklistService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -20,9 +21,9 @@ export class AuthGuard implements CanActivate {
     const token = request.cookies['user_jwt'];
     // const token = this.extractTokenFromHeader(request);
 
-    if (!token) throw new UnauthorizedException();
-    // if (this.authService.isTokenBlacklisted(token))
-    //   throw new UnauthorizedException(); // TODO
+    if (!token) throw new UnauthorizedException('Token not found');
+    if (await this.tokenBlacklistService.isTokenBlacklisted(token))
+      throw new UnauthorizedException(); // TODO
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
@@ -30,7 +31,7 @@ export class AuthGuard implements CanActivate {
       });
       request['user'] = payload;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid token');
     }
 
     return true;

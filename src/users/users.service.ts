@@ -85,4 +85,16 @@ export class UsersService {
   async comparePasswords(password: string, hash: string) {
     return await bcrypt.compare(password, hash);
   }
+
+  validateEmail(email: string): boolean {
+    return email.includes('@');
+  }
+
+  validateUsername(username: string): boolean {
+    return username.replaceAll(' ', '').length > 3;
+  }
+
+  validatePassword(password: string): boolean {
+    return password.length > 2;
+  }
 }

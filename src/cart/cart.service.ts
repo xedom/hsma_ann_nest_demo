@@ -31,6 +31,18 @@ export class CartService {
   }
 
   async addItems(userID: string, itemDto: ItemDto[]) {
+    if (itemDto.length == 0) return { statusCode: 400, message: 'Bad request' };
+    if (itemDto.filter((item) => item.quantity < 1).length > 0) {
+      return { statusCode: 400, message: 'Bad request' };
+    }
+    if (
+      itemDto.filter(
+        (item) => item.productID == null || item.productID == undefined,
+      ).length > 0
+    ) {
+      return { statusCode: 400, message: 'Bad request' };
+    }
+
     const items = itemDto.map((item) => ({
       ...item,
       productID: new Types.ObjectId(item.productID),

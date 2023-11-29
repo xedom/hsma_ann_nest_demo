@@ -26,7 +26,7 @@ export class CartController {
 
   @UseGuards(AuthGuard)
   @Post('items')
-  async findOne(@Request() req, @Body() itemDto: ItemDto | ItemDto[]) {
+  async addItems(@Request() req, @Body() itemDto: ItemDto | ItemDto[]) {
     return this.cartService.addItems(
       req.user.sub,
       Array.isArray(itemDto) ? itemDto : [itemDto],

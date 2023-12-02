@@ -11,7 +11,7 @@ export enum OrderStatus {
 
 @Schema()
 export class Order {
-  @Prop({ required: true, unique: true, type: Types.ObjectId, ref: 'User' })
+  @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
   userID: Types.ObjectId;
 
   @Prop({ type: [ItemSchema], default: [] })

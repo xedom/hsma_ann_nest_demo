@@ -99,4 +99,16 @@ export class CartService {
 
     return order;
   }
+
+  async clear(userID: string) {
+    const cart = await this.findOne(userID);
+    if (!cart) return { statusCode: 404, message: 'Cart not found' };
+
+    const res = await this.cartModel.updateOne(
+      { userID: new Types.ObjectId(userID) },
+      { items: [], total: 0 },
+    );
+
+    return res;
+  }
 }

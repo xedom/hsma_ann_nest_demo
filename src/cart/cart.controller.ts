@@ -50,6 +50,12 @@ export class CartController {
   }
 
   @UseGuards(AuthGuard)
+  @Delete()
+  async clearCart(@Request() req) {
+    return this.cartService.clear(req.user.sub);
+  }
+
+  @UseGuards(AuthGuard)
   @Post('checkout')
   async checkout(@Request() req) {
     console.log('checkout');

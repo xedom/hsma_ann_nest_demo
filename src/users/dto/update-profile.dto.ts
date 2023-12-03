@@ -1,6 +1,9 @@
 export class UpdateProfileDto {
-  profilePic?: string;
+  username?: string;
+  email?: string;
   password?: string;
+  newpassword?: string;
+  profilePic?: string;
   address?: {
     street: string;
     city: string;

@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   UploadedFile,
   HttpStatus,
-  HttpException,
   Redirect,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -76,16 +75,8 @@ export class UsersController {
     const base64Image: string = image?.buffer.toString('base64');
     const userInfo = body; // TODO: save to db
 
-    console.log('userInfo', userInfo);
-
-    if (!image) {
-      throw new HttpException(
-        'TEST error: image is null',
-        HttpStatus.FORBIDDEN,
-      );
-    }
-
     this.usersService.updateProfile(req.user.sub, {
+      ...userInfo,
       profilePic: base64Image,
     });
 

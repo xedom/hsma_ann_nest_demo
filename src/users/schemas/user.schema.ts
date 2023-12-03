@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Address, AddressSchema } from './address.schema';
 import { Document } from 'mongoose';
 
 // import { Order } from './order.schema';
@@ -27,8 +26,11 @@ export class User {
   @Prop()
   profilePic: string; // TODO: change to buffer and save image type
 
-  @Prop({ type: AddressSchema })
-  address: Address;
+  // @Prop({ type: AddressSchema })
+  // address: Address;
+
+  @Prop()
+  address: string;
 
   @Prop()
   balance: number;

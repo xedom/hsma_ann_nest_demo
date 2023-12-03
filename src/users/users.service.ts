@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
@@ -61,15 +61,54 @@ export class UsersService {
       .exec();
   }
 
-  async updateProfile(id: string, updateProfileDto: UpdateProfileDto) {
+  async updateProfile(userID: string, updateProfileDto: UpdateProfileDto) {
     // retruning all the updated fields except password
-    const selectedFields = Object.keys(updateProfileDto)
-      .join(' ')
-      .replace(' password', '');
+    const toUpdate: Record<string, string> = Object.entries(updateProfileDto)
+      .filter((entry) => entry[1] !== '' && entry[1] !== undefined)
+      .reduce((acc, [key, value]) => {
+        if (key === 'email' && !this.validateEmail(value))
+          throw new HttpException('Invalid email', 400);
+        if (key === 'username' && !this.validateUsername(value))
+          throw new HttpException('Invalid username', 400);
+        if (key === 'newPassword' && !this.validatePassword(value))
+          throw new HttpException('Invalid password', 400);
+
+        // if (key === 'password') value = this.hashPasswordSync(value);
+        // if (key === 'newPassword') value = this.hashPasswordSync(value);
+
+        acc[key] = value;
+        return acc;
+      }, {});
+
+    if (Object.keys(toUpdate).length === 0)
+      return { message: 'Nothing to update' };
+
+    const toUpdateKeys = Object.keys(toUpdate);
+
+    if (toUpdateKeys.includes('newPassword')) {
+      if (!toUpdateKeys.includes('password'))
+        throw new HttpException('Missing password', 400);
+
+      const { password, newPassword } = toUpdate;
+      const userToUpdate = await this.userModel.findById(userID).exec();
+      const isMatch = await this.comparePasswords(
+        password,
+        userToUpdate.password,
+      );
+
+      if (!isMatch) throw new HttpException('Invalid password', 400);
+      toUpdate.password = await this.hashPassword(newPassword);
+      delete toUpdate.newPassword;
+    }
+
+    const fieldsToReturn = toUpdateKeys.join(' ').replace(' password', '');
+
+    console.log('-- toUpdate:', toUpdate);
+    console.log('-- fieldsToReturn:', fieldsToReturn);
 
     return this.userModel
-      .findByIdAndUpdate(id, updateProfileDto, { new: true })
-      .select(selectedFields)
+      .findByIdAndUpdate(userID, toUpdate)
+      .select(fieldsToReturn)
       .exec();
   }
 
@@ -77,6 +116,12 @@ export class UsersService {
     const salt = await bcrypt.genSalt(10); // TODO replace with env var
     console.log('-- salt --', salt);
     return bcrypt.hash(password, 10); // TODO replace rounds with salt
+  }
+
+  hashPasswordSync(password: string) {
+    const salt = bcrypt.genSaltSync(10); // TODO replace with env var
+    console.log('-- salt --', salt);
+    return bcrypt.hashSync(password, 10); // TODO replace rounds with salt
   }
 
   async comparePasswords(password: string, hash: string) {

@@ -57,7 +57,7 @@ export class AuthService {
         email: user.email,
         password: hashedPassword,
         profilePic: null,
-        address: { street: '', city: '', state: '', zip: '', country: '' },
+        address: '',
         balance: 1000,
         role: UserRole.USER,
       };

@@ -25,16 +25,13 @@ export class UsersService {
 
   async createWithCart(createUserDto: CreateUserDto) {
     const user = await this.userModel.create(createUserDto);
-    const cart = await this.cartService.create({
+    await this.cartService.create({
       userID: user._id,
       items: [],
       total: 0,
     });
-    const updateUser = await this.userModel.findByIdAndUpdate(user._id, {
-      cart: cart._id,
-    });
 
-    return updateUser;
+    return user;
   }
 
   async findAll() {

@@ -80,6 +80,7 @@ export class CartService {
       userID: new Types.ObjectId(userID),
       items: cart.items,
       total: cart.total,
+      date: new Date(),
       status: OrderStatus.PENDING,
     };
     const order = await this.ordersService.create(newOrder);

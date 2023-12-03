@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User, UserRole } from 'src/users/schemas/user.schema';
-import { Types } from 'mongoose';
 import { TokenBlacklistService } from 'src/token-blacklist/token-blacklist.service';
 
 @Injectable()
@@ -59,8 +58,6 @@ export class AuthService {
         password: hashedPassword,
         profilePic: null,
         address: { street: '', city: '', state: '', zip: '', country: '' },
-        orders: [] as Types.Array<Types.ObjectId>,
-        cart: null,
         balance: 1000,
         role: UserRole.USER,
       };

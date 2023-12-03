@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Address, AddressSchema } from './address.schema';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 
 // import { Order } from './order.schema';
 // import { Cart } from './cart.schema';
@@ -29,12 +29,6 @@ export class User {
 
   @Prop({ type: AddressSchema })
   address: Address;
-
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Order' }] })
-  orders: Types.Array<Types.ObjectId>;
-
-  @Prop({ type: Types.ObjectId, ref: 'Cart' })
-  cart: Types.ObjectId;
 
   @Prop()
   balance: number;

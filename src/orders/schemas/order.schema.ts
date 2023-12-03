@@ -20,6 +20,9 @@ export class Order {
   @Prop({ required: true })
   total: number;
 
+  @Prop({ default: Date.now() })
+  date: Date;
+
   @Prop({ enum: OrderStatus, default: OrderStatus.DONE })
   status: OrderStatus;
 }

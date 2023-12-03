@@ -6,11 +6,13 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 import { ItemDto } from './dto/item.dto copy';
 import { OrdersService } from 'src/orders/orders.service';
 import { Order, OrderStatus } from 'src/orders/schemas/order.schema';
+import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class CartService {
   constructor(
     private readonly ordersService: OrdersService,
+    private readonly productsService: ProductsService,
     @InjectModel(Cart.name) private readonly cartModel: Model<Cart>,
   ) {}
 
@@ -76,27 +78,27 @@ export class CartService {
     const cart = await this.findOne(userID);
     if (!cart) return { statusCode: 404, message: 'Cart not found' };
 
-    const newOrder: Order = {
+    const orderCost = await this.productsService.getProductsCost(cart.items);
+
+    const order = await this.ordersService.create({
       userID: new Types.ObjectId(userID),
       items: cart.items,
-      total: cart.total,
+      total: orderCost,
       date: new Date(),
       status: OrderStatus.PENDING,
-    };
-    const order = await this.ordersService.create(newOrder);
+    } as Order);
 
     await this.cartModel.updateOne(
       { userID: new Types.ObjectId(userID) },
       { items: [], total: 0 },
     );
 
-    // // creating a new cart
-    // const newCart: Cart = {
+    // creating a new cart
+    // await this.create({
     //   userID: new Types.ObjectId(userID),
     //   items: [],
     //   total: 0,
-    // };
-    // await this.create(newCart);
+    // } as Cart);
 
     return order;
   }

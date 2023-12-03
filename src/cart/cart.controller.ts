@@ -58,7 +58,6 @@ export class CartController {
   @UseGuards(AuthGuard)
   @Post('checkout')
   async checkout(@Request() req) {
-    console.log('checkout');
     return this.cartService.checkout(req.user.sub);
   }
 }

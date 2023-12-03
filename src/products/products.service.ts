@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schemas/products.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class ProductsService {
@@ -30,6 +30,22 @@ export class ProductsService {
     return this.productModel
       .findByIdAndUpdate(product_id, productData, { new: true })
       .exec();
+  }
+
+  async getProductsCost(
+    products: { productID: Types.ObjectId; quantity: number }[],
+  ) {
+    let cost = 0;
+
+    // TODO optimize query
+    for (const product of products) {
+      const productData = await this.productModel
+        .findById(product.productID)
+        .exec();
+      cost += productData.price * product.quantity;
+    }
+
+    return cost;
   }
 
   async remove(product_id: string) {

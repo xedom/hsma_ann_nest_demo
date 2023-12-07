@@ -1,9 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "outputDirectory": "dist",
-  "devCommand": "npm run start:prod",
   "regions": ["fra1"],
   "builds": [
     {
@@ -18,4 +14,27 @@
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     }
   ]
+}
+
+
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "dist",
+  "devCommand": "npm run start:prod",
+  "regions": ["fra1"],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "dist/main.js"
+    }
+  ],
+  "functions": {
+    "dist/main.js": {
+      "includeFiles": "./dist/**",
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 }

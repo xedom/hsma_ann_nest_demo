@@ -1,20 +1,17 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "outputDirectory": "dist",
-  "devCommand": "npm run start:prod",
   "regions": ["fra1"],
-  "functions": {
-    "dist/main.js": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
-  "redirects": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "dist/main.js"
+      "src": "dist/main.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/main.js",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     }
   ]
 }

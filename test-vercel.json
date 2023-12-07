@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run start:prod",
   "builds": [
     {
       "src": "dist/main.js",

@@ -11,11 +11,10 @@
       "maxDuration": 10
     }
   },
-  "routes": [
+  "redirects": [
     {
-      "src": "/(.*)",
-      "dest": "dist/main.js",
-      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+      "source": "/(.*)",
+      "destination": "dist/main.js"
     }
   ]
 }

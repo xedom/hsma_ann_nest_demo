@@ -5,12 +5,12 @@
   "outputDirectory": "dist",
   "devCommand": "npm run start:prod",
   "regions": ["fra1"],
-  "functions": {
-    "dist/main.js": {
-      "memory": 1024,
-      "maxDuration": 10
+  "builds": [
+    {
+      "src": "dist/main.js",
+      "use": "@vercel/node"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(.*)",

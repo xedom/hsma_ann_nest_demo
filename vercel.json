@@ -1,7 +1,10 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "dist",
   "devCommand": "npm run start:prod",
+  "regions": ["fra1","cdg1"],
   "builds": [
     {
       "src": "dist/main.js",

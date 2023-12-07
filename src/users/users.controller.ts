@@ -68,12 +68,12 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('settings') // TODO: work in progress
+  @Post('settings')
   @UseInterceptors(FileInterceptor('image'))
   @Redirect()
   uploadFile(@Request() req, @UploadedFile() image, @Body() body) {
     const base64Image: string = image?.buffer.toString('base64');
-    const userInfo = body; // TODO: save to db
+    const userInfo = body;
 
     this.usersService.updateProfile(req.user.sub, {
       ...userInfo,

@@ -1,5 +1,4 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
@@ -23,13 +22,9 @@ export class UsersService {
     private cartService: CartService,
   ) {}
 
-  async createWithCart(dto: CreateUserDto) {
-    const user = await this.userModel.create(dto);
-    await this.cartService.create({
-      userID: user._id,
-      items: [],
-      total: 0,
-    });
+  async createWithCart(dto: User) {
+    const user = await this.userModel.create({ balance: 1000, ...dto });
+    await this.cartService.create({ userID: user._id });
 
     return user;
   }

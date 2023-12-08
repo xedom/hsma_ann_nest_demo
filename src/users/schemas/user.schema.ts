@@ -23,20 +23,17 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop()
-  profilePic: string; // TODO: change to buffer and save image type
+  @Prop({ default: null })
+  profilePic?: string | null; // TODO: change to buffer and save image type
 
-  // @Prop({ type: AddressSchema })
-  // address: Address;
+  @Prop({ default: '' }) // @Prop({ type: AddressSchema })
+  address?: string; // address: Address;
 
-  @Prop()
-  address: string;
+  @Prop({ default: 0 })
+  balance?: number;
 
-  @Prop()
-  balance: number;
-
-  @Prop({ type: String, enum: UserRole })
-  role: UserRole;
+  @Prop({ enum: UserRole, default: UserRole.USER })
+  role?: UserRole;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

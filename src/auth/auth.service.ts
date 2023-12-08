@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { User, UserRole } from 'src/users/schemas/user.schema';
+import { User } from 'src/users/schemas/user.schema';
 import { TokenBlacklistService } from 'src/token-blacklist/token-blacklist.service';
 
 @Injectable()
@@ -29,33 +29,21 @@ export class AuthService {
     }
   }
 
-  async signUp(user: Partial<User>) {
-    if (!this.usersService.validateEmail(user.email))
+  async signUp(user: User) {
+    const { username, email, password } = user;
+    if (!this.usersService.validateEmail(email))
       throw new UnauthorizedException('Invalid email');
-    if (!this.usersService.validateUsername(user.username))
+    if (!this.usersService.validateUsername(username))
       throw new UnauthorizedException('Invalid username');
-    if (!this.usersService.validatePassword(user.password))
+    if (!this.usersService.validatePassword(password))
       throw new UnauthorizedException('Invalid password');
 
     try {
-      const hashedPassword = await this.usersService.hashPassword(
-        user.password,
-      );
+      const passwordHash = await this.usersService.hashPassword(password);
+      const newUser = { username, email, password: passwordHash };
+      const createdUser = await this.usersService.createWithCart(newUser);
 
-      const newUser: Omit<User, '_id'> = {
-        username: user.username,
-        email: user.email,
-        password: hashedPassword,
-        profilePic: null,
-        address: '',
-        balance: 1000,
-        role: UserRole.USER,
-      };
-
-      const { username, email } =
-        await this.usersService.createWithCart(newUser);
-
-      return { username, email };
+      return { msg: 'User created successfully', user: createdUser };
     } catch (error) {
       if (error.code === 11000)
         throw new UnauthorizedException('Username or email already exists');

@@ -16,10 +16,10 @@ export class Cart {
   userID: Types.ObjectId;
 
   @Prop({ type: [ItemSchema], default: [] })
-  items: Item[];
+  items?: Item[];
 
-  @Prop({ required: true })
-  total: number;
+  @Prop({ required: true, default: 0 })
+  total?: number;
 }
 
 export const CartSchema = SchemaFactory.createForClass(Cart);

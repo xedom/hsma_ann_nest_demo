@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from './schemas/user.schema';
+import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CartService } from 'src/cart/cart.service';
@@ -23,8 +23,8 @@ export class UsersService {
     private cartService: CartService,
   ) {}
 
-  async createWithCart(createUserDto: CreateUserDto) {
-    const user = await this.userModel.create(createUserDto);
+  async createWithCart(dto: CreateUserDto) {
+    const user = await this.userModel.create(dto);
     await this.cartService.create({
       userID: user._id,
       items: [],
@@ -38,8 +38,13 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  async findOne(username: string): Promise<UserDocument | undefined> {
+  async findOne(username: string) {
     return this.userModel.findOne({ username: username }).exec();
+  }
+
+  async findOneWithPassword(username: string, password: string) {
+    const passHash = this.hashPasswordSync(password);
+    return this.userModel.findOne({ username, password: passHash }).exec();
   }
 
   async remove(id: string) {

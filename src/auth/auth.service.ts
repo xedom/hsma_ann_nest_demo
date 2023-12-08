@@ -12,28 +12,18 @@ export class AuthService {
     private tokenBlacklistService: TokenBlacklistService,
   ) {}
 
-  async signIn(
-    username: string,
-    pass: string,
-  ): Promise<{
-    user: { username: string; role: string; sub: string };
-    access_token: string;
-  }> {
+  async signIn(username: string, pass: string) {
     try {
-      const user = await this.usersService.findOne(username);
-      if (!user) throw new UnauthorizedException('User not found');
-      if (!(await this.usersService.comparePasswords(pass, user.password))) {
-        throw new UnauthorizedException('Invalid credentials');
-      }
+      const user = await this.usersService.findOneWithPassword(username, pass);
+      if (!user) throw new UnauthorizedException('Invalid credentials');
 
-      const payload = {
+      const access_token = await this.jwtService.signAsync({
         username: user.username,
         role: user.role,
         sub: user._id.toString(),
-      };
-      const access_token = await this.jwtService.signAsync(payload);
+      });
 
-      return { user: payload, access_token };
+      return { access_token };
     } catch (error) {
       throw error;
     }

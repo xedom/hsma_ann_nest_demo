@@ -1,9 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-// import { Order } from './order.schema';
-// import { Cart } from './cart.schema';
-
 export enum UserRole {
   ADMIN = 'admin',
   VENDOR = 'vendor',

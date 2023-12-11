@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { ConfigModule } from '@nestjs/config';
 import { TokenBlacklistModule } from 'src/token-blacklist/token-blacklist.module';
+import { LocalStrategy } from './strategy/local.strategy';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { TokenBlacklistModule } from 'src/token-blacklist/token-blacklist.module
       signOptions: { expiresIn: '10800s' }, // TODO: change this to 1h
     }),
   ],
-  providers: [AuthService],
+  providers: [AuthService, LocalStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })

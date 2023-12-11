@@ -13,11 +13,12 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { LocalAuthGuard } from './strategy/local-auth.guard';
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -29,7 +30,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(ThrottlerGuard)
   @Redirect()
-  @Post('login')
+  @Post('login_old')
   async signIn(
     @Res({ passthrough: true }) res: Response,
     @Body() loginDto: LoginUserDto,
@@ -68,6 +69,36 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @UseGuards(ThrottlerGuard)
+  @UseGuards(LocalAuthGuard)
+  @Redirect()
+  @Post('login')
+  async login(@Request() req, @Res() res: Response) {
+    if (!req.user.access_token)
+      throw new HttpException(
+        'Server error while logging in',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+
+    // source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
+    res.cookie('user_jwt', req.user.access_token, {
+      expires: new Date(
+        Date.now() + parseInt(this.configService.get('COOKIE_EXPIRES')),
+      ),
+      httpOnly: this.configService.get('COOKIE_HTTP_ONLY'),
+      secure: this.configService.get('COOKIE_SECURE'),
+      domain: this.configService.get('COOKIE_DOMAIN'),
+      sameSite: this.configService.get('COOKIE_SAME_SITE'),
+    });
+
+    return {
+      ...req.user,
+      statusCode: HttpStatus.PERMANENT_REDIRECT,
+      url: process.env.FRONTEND_URL,
+    };
+  }
+
+  @HttpCode(HttpStatus.OK)
   @Post('register')
   @Redirect()
   async signUp(@Body() registerDto: RegisterUserDto) {
@@ -84,8 +115,9 @@ export class AuthController {
   @Redirect()
   @Get('logout')
   async logout(@Request() req, @Res({ passthrough: true }) res: Response) {
-    // get token from cookie
     const token = req.cookies['user_jwt'];
+
+    console.log('logout: ', req.cookies);
 
     // remove token from cookie
     res.cookie('user_jwt', '', {

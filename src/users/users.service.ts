@@ -38,8 +38,10 @@ export class UsersService {
   }
 
   async findOneWithPassword(username: string, password: string) {
-    const passHash = this.hashPasswordSync(password);
-    return this.userModel.findOne({ username, password: passHash }).exec();
+    const user = await this.userModel.findOne({ username }).exec();
+    const passHash = this.comparePasswords(password, user.password);
+    if (!passHash) throw new HttpException('Invalid password', 400);
+    return user;
   }
 
   async remove(id: string) {

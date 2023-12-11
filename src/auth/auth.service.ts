@@ -23,6 +23,12 @@ export class AuthService {
         sub: user._id.toString(),
       });
 
+      console.log('signing in', {
+        username: user.username,
+        role: user.role,
+        sub: user._id.toString(),
+      });
+
       return { access_token };
     } catch (error) {
       throw error;

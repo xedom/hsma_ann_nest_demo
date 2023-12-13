@@ -12,12 +12,13 @@ import {
   UploadedFile,
   HttpStatus,
   Redirect,
+  HttpException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '../auth/auth.guard';
-import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HttpService } from '@nestjs/axios';
+import { UserRole } from './schemas/user.schema';
 
 @Controller('users')
 export class UsersController {
@@ -33,16 +34,6 @@ export class UsersController {
     return this.usersService.getProfile(req.user.sub);
   }
 
-  @UseGuards(AuthGuard)
-  @Put('profile')
-  async updateProfile(
-    @Request() req,
-    @Body() updateProfileDto: UpdateProfileDto,
-  ) {
-    const userID = req.user.sub;
-    return this.usersService.updateProfile(userID, updateProfileDto);
-  }
-
   @Get(':username')
   getUser(@Param('username') username: string) {
     return this.usersService.getUser(username);
@@ -53,20 +44,25 @@ export class UsersController {
     return this.usersService.getUsers();
   }
 
-  // @UseGuards(AuthGuard)
-  // @Put(':id')
-  // update(
-  //   @Request() req,
-  //   @Param('id') id: string,
-  //   @Body() updateUserDto: UpdateUserDto,
-  // ) {
-  //   console.log('update user', req.user);
-  //   return this.usersService.update(id, updateUserDto);
-  // }
+  @UseGuards(AuthGuard)
+  @Put(':id')
+  update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() updateUserDto: { role: UserRole },
+  ) {
+    if (req.user.role !== UserRole.ADMIN || req.user.sub === id)
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+
+    return this.usersService.update(id, updateUserDto);
+  }
 
   @UseGuards(AuthGuard)
   @Delete(':id') // TODO: add auth guard - only admin can delete users
   remove(@Request() req, @Param('id') id: string) {
+    if (req.user.role !== UserRole.ADMIN && req.user.sub !== id)
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+
     console.log('remove user', req.user);
     return this.usersService.remove(id);
   }

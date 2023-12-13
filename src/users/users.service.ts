@@ -78,16 +78,24 @@ export class UsersService {
       .exec();
   }
 
+  async update(id: string, updateUserDto: { role: string }) {
+    const res = await this.userModel
+      .findByIdAndUpdate(id, updateUserDto)
+      .exec();
+
+    return res;
+  }
+
   async updateProfile(userID: string, updateProfileDto: UpdateProfileDto) {
     // retruning all the updated fields except password
     const toUpdate: Record<string, string> = Object.entries(updateProfileDto)
       .filter((entry) => entry[1] !== '' && entry[1] !== undefined)
       .reduce((acc, [key, value]) => {
-        if (key === 'email' && !this.validateEmail(value))
+        if (key === 'email' && !this.validateEmail(value as string))
           throw new HttpException('Invalid email', 400);
-        if (key === 'username' && !this.validateUsername(value))
+        if (key === 'username' && !this.validateUsername(value as string))
           throw new HttpException('Invalid username', 400);
-        if (key === 'newPassword' && !this.validatePassword(value))
+        if (key === 'newPassword' && !this.validatePassword(value as string))
           throw new HttpException('Invalid password', 400);
 
         // if (key === 'password') value = this.hashPasswordSync(value);
@@ -119,9 +127,6 @@ export class UsersService {
     }
 
     const fieldsToReturn = toUpdateKeys.join(' ').replace(' password', '');
-
-    console.log('-- toUpdate:', toUpdate);
-    console.log('-- fieldsToReturn:', fieldsToReturn);
 
     return this.userModel
       .findByIdAndUpdate(userID, toUpdate)

@@ -37,6 +37,21 @@ export class UsersService {
     return this.userModel.findOne({ username: username }).exec();
   }
 
+  async findOrCreateGithub(userData: Partial<User>) {
+    console.log('-- userData:', userData);
+
+    const user = await this.userModel
+      .findOne({ githubID: userData.githubID })
+      .exec();
+    if (user) return user;
+
+    const newUser = await this.userModel.create({
+      ...userData,
+      password: 'xxxx',
+    }); // TODO
+    return newUser;
+  }
+
   async findOneWithPassword(username: string, password: string) {
     const user = await this.userModel.findOne({ username }).exec();
     const passHash = this.comparePasswords(password, user.password);

@@ -15,10 +15,16 @@ export class User {
   username: string;
 
   @Prop({ required: true, unique: true })
-  email: string;
+  email?: string;
 
   @Prop({ required: true })
   password: string;
+
+  @Prop({ default: null })
+  githubID?: string;
+
+  @Prop({ default: null })
+  provider?: string;
 
   @Prop({ default: null })
   profilePic?: string | null; // TODO: change to buffer and save image type

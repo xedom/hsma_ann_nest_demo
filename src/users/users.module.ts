@@ -5,11 +5,13 @@ import { User, UserSchema } from './schemas/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CartModule } from 'src/cart/cart.module';
 import { TokenBlacklistModule } from 'src/token-blacklist/token-blacklist.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     CartModule,
     TokenBlacklistModule,
+    HttpModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [UsersController],

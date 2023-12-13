@@ -17,10 +17,14 @@ import { UsersService } from './users.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { HttpService } from '@nestjs/axios';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly httpService: HttpService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @Get('profile')
@@ -71,13 +75,27 @@ export class UsersController {
   @Post('settings')
   @UseInterceptors(FileInterceptor('image'))
   @Redirect()
-  uploadFile(@Request() req, @UploadedFile() image, @Body() body) {
+  async uploadFile(@Request() req, @UploadedFile() image, @Body() body) {
     const base64Image: string = image?.buffer.toString('base64');
     const userInfo = body;
 
+    const imageToUpload = {
+      user: req.user.sub,
+      mimetype: image.mimetype,
+      buffer: base64Image,
+    };
+
+    const { data } = await this.httpService
+      .post('https://media.xed.im/upload', imageToUpload, {
+        headers: { Authorization: `Bearer ${process.env.MEDIA_XED_TOKEN}` },
+      })
+      .toPromise();
+
+    const { url } = data;
+
     this.usersService.updateProfile(req.user.sub, {
       ...userInfo,
-      profilePic: base64Image,
+      profilePic: url,
     });
 
     return {

@@ -19,12 +19,13 @@ import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { LocalAuthGuard } from './local/local-auth.guard';
 import { AuthGuard } from './auth.guard';
+import { AppConfig } from 'src/config/interfaces';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private configService: ConfigService,
+    private configService: ConfigService<AppConfig>,
   ) {}
 
   @HttpCode(HttpStatus.OK)
@@ -49,17 +50,12 @@ export class AuthController {
       );
 
     // source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
-    const cookieOptions = {
+    res.cookie('user_jwt', user.access_token, {
+      ...this.configService.get('cookie'),
       expires: new Date(
-        Date.now() + parseInt(this.configService.get('COOKIE_EXPIRES')),
+        Date.now() + parseInt(this.configService.get<string>('cookie.expires')),
       ),
-      httpOnly: this.configService.get('COOKIE_HTTP_ONLY'),
-      secure: this.configService.get('COOKIE_SECURE'),
-      domain: this.configService.get('COOKIE_DOMAIN'),
-      sameSite: this.configService.get('COOKIE_SAME_SITE'),
-    };
-
-    res.cookie('user_jwt', user.access_token, cookieOptions);
+    });
 
     return {
       ...user,
@@ -82,13 +78,10 @@ export class AuthController {
 
     // source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
     res.cookie('user_jwt', req.user.access_token, {
+      ...this.configService.get('cookie'),
       expires: new Date(
-        Date.now() + parseInt(this.configService.get('COOKIE_EXPIRES')),
+        Date.now() + parseInt(this.configService.get<string>('cookie.expires')),
       ),
-      httpOnly: this.configService.get('COOKIE_HTTP_ONLY'),
-      secure: this.configService.get('COOKIE_SECURE'),
-      domain: this.configService.get('COOKIE_DOMAIN'),
-      sameSite: this.configService.get('COOKIE_SAME_SITE'),
     });
 
     return {
@@ -121,11 +114,8 @@ export class AuthController {
 
     // remove token from cookie
     res.cookie('user_jwt', '', {
+      ...this.configService.get('cookie'),
       expires: new Date(Date.now()),
-      httpOnly: this.configService.get('COOKIE_HTTP_ONLY'),
-      secure: this.configService.get('COOKIE_SECURE'),
-      domain: this.configService.get('COOKIE_DOMAIN'),
-      sameSite: this.configService.get('COOKIE_SAME_SITE'),
     });
 
     return {

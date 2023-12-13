@@ -17,7 +17,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { LocalAuthGuard } from './strategy/local-auth.guard';
+import { LocalAuthGuard } from './local/local-auth.guard';
 import { AuthGuard } from './auth.guard';
 
 @Controller('auth')

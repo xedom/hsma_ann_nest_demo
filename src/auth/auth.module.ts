@@ -14,10 +14,10 @@ import { AppConfig } from 'src/config/interfaces';
     UsersModule,
     TokenBlacklistModule,
     JwtModule.registerAsync({
+      global: true,
       // more info on https://github.com/nestjs/jwt/blob/master/README.md
       // available options: https://github.com/auth0/node-jsonwebtoken#usage
       useFactory: async (configService: ConfigService<AppConfig>) => ({
-        global: true,
         secret: configService.get<string>('auth.jwt.secret'),
         signOptions: {
           expiresIn: configService.get<number>('auth.jwt.expiresInSeconds'),

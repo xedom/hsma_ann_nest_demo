@@ -14,10 +14,6 @@ import { GithubOauthModule } from './auth/github/github-oauth.module';
 import appConfig from './config/app.config';
 import { AppConfig } from './config/interfaces';
 
-ConfigModule.forRoot();
-
-const configService: ConfigService<AppConfig> = new ConfigService();
-
 @Module({
   imports: [
     UsersModule,
@@ -29,8 +25,12 @@ const configService: ConfigService<AppConfig> = new ConfigService();
     TokenBlacklistModule,
     GithubOauthModule,
     ConfigModule.forRoot({ isGlobal: true, load: [appConfig] }), //environment variables
-    // MongooseModule.forRoot(process.env.MONGO_URI),
-    MongooseModule.forRoot(configService.get<string>('mongodb.uri')),
+    MongooseModule.forRootAsync({
+      useFactory: async (configService: ConfigService<AppConfig>) => ({
+        uri: configService.get<string>('mongodb.uri'),
+      }),
+      inject: [ConfigService],
+    }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
   ],
   controllers: [AppController],

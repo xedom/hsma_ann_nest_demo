@@ -3,7 +3,7 @@ export class UpdateProfileDto {
   email?: string;
   password?: string;
   newpassword?: string;
-  profilePic?: string;
+  picture?: string;
   address?: {
     street: string;
     city: string;

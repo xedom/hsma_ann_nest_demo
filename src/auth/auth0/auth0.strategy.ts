@@ -1,32 +1,33 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-github2';
-
+import { Strategy } from 'passport-auth0';
 import { AppConfig } from '../../config/interfaces';
 import { UsersService } from '../../users/users.service';
 
 @Injectable()
-export class GithubOauthStrategy extends PassportStrategy(Strategy, 'github') {
+export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
   constructor(
     private configService: ConfigService<AppConfig>,
     private usersService: UsersService,
   ) {
     super({
-      clientID: configService.get<string>('auth.github.clientId'),
-      clientSecret: configService.get<string>('auth.github.clientSecret'),
-      callbackURL: configService.get<string>('auth.github.callbackURL'),
-      scope: ['public_profile user:email'],
+      clientID: configService.get<string>('auth.auth0.clientId'),
+      clientSecret: configService.get<string>('auth.auth0.clientSecret'),
+      callbackURL: configService.get<string>('auth.auth0.callbackURL'),
+      domain: 'hsma.eu.auth0.com',
+      state: false,
+      scope: ['openid', 'profile', 'email'],
     });
   }
 
   async validate(accessToken, refreshToken, profile) {
     const user = await this.usersService.findOrCreateByProvider({
-      provider: 'github',
-      providerID: profile.id.toString(),
-      username: profile.username,
-      email: profile._json.email,
-      picture: profile._json.avatar_url,
+      provider: profile.provider,
+      providerID: profile.id.split('|')[1],
+      username: profile.nickname,
+      email: profile.emails ? profile.emails[0].value : null,
+      picture: profile.picture,
     });
 
     if (!user) throw new UnauthorizedException();

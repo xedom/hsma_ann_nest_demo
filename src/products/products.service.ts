@@ -21,7 +21,14 @@ export class ProductsService {
     return this.productModel.findById(_id).exec();
   }
 
-  async create(productData) {
+  async findByUser(userID: string) {
+    console.log('userID', userID);
+    return this.productModel
+      .find({ userID: new Types.ObjectId(userID) })
+      .exec();
+  }
+
+  async create(productData: Product) {
     const product = new this.productModel(productData);
     return product.save();
   }

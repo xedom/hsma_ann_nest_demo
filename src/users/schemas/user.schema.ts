@@ -14,22 +14,22 @@ export class User {
   @Prop({ required: true, unique: true })
   username: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ default: null })
   email?: string;
 
-  @Prop({ required: true })
-  password: string;
-
   @Prop({ default: null })
-  githubID?: string;
+  password?: string;
 
   @Prop({ default: null })
   provider?: string;
 
   @Prop({ default: null })
-  profilePic?: string | null; // TODO: change to buffer and save image type
+  providerID?: string;
 
-  @Prop({ default: '' }) // @Prop({ type: AddressSchema })
+  @Prop({ default: null })
+  picture?: string | null; // TODO: change to buffer and save image type
+
+  @Prop({ default: null }) // @Prop({ type: AddressSchema })
   address?: string; // address: Address;
 
   @Prop({ default: 0 })

@@ -39,6 +39,11 @@ export class UsersController {
     return this.usersService.getUser(username);
   }
 
+  @Get('id/:userID')
+  getUserByID(@Param('userID') userID: string) {
+    return this.usersService.getUserByID(userID);
+  }
+
   @Get()
   getUsers() {
     return this.usersService.getUsers();
@@ -72,31 +77,28 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('image'))
   @Redirect()
   async uploadFile(@Request() req, @UploadedFile() image, @Body() body) {
-    const base64Image: string = image?.buffer.toString('base64');
     const userInfo = body;
 
-    const imageToUpload = {
-      user: req.user.sub,
-      mimetype: image.mimetype,
-      buffer: base64Image,
-    };
+    if (image) {
+      const imageToUpload = {
+        user: req.user.sub,
+        mimetype: image.mimetype,
+        buffer: image?.buffer.toString('base64'),
+      };
 
-    const { data } = await this.httpService
-      .post('https://media.xed.im/upload', imageToUpload, {
-        headers: { Authorization: `Bearer ${process.env.MEDIA_XED_TOKEN}` },
-      })
-      .toPromise();
+      const { data } = await this.httpService
+        .post('https://media.xed.im/upload', imageToUpload, {
+          headers: { Authorization: `Bearer ${process.env.MEDIA_XED_TOKEN}` },
+        })
+        .toPromise();
 
-    const { url } = data;
+      userInfo.picture = data.url;
+    }
 
-    this.usersService.updateProfile(req.user.sub, {
-      ...userInfo,
-      profilePic: url,
-    });
+    this.usersService.updateProfile(req.user.sub, userInfo);
 
     return {
       message: 'User updated',
-      image: base64Image,
       statusCode: HttpStatus.PERMANENT_REDIRECT,
       url: process.env.FRONTEND_URL + '/settings',
     };

@@ -10,7 +10,7 @@ const publicUserFields = {
   _id: 1,
   username: 1,
   email: 1,
-  profilePic: 1,
+  picture: 1,
   role: 1,
   createdAt: 1,
 };
@@ -37,19 +37,18 @@ export class UsersService {
     return this.userModel.findOne({ username: username }).exec();
   }
 
-  async findOrCreateGithub(userData: Partial<User>) {
+  async findOrCreateByProvider(userData: Partial<User>) {
     console.log('-- userData:', userData);
 
     const user = await this.userModel
-      .findOne({ githubID: userData.githubID })
+      .findOne({ provider: userData.provider, providerID: userData.providerID })
       .exec();
+
+    console.log('-- user:', user);
+
     if (user) return user;
 
-    const newUser = await this.userModel.create({
-      ...userData,
-      password: 'xxxx',
-    }); // TODO
-    return newUser;
+    return await this.userModel.create(userData);
   }
 
   async findOneWithPassword(username: string, password: string) {
@@ -65,6 +64,10 @@ export class UsersService {
 
   async getUser(username: string) {
     return this.userModel.find({ username }).select(publicUserFields).exec();
+  }
+
+  async getUserByID(userID: string) {
+    return this.userModel.findById(userID).select(publicUserFields).exec();
   }
 
   async getUsers() {

@@ -10,7 +10,6 @@ import { ProductsModule } from './products/products.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { OrdersModule } from './orders/orders.module';
 import { TokenBlacklistModule } from './token-blacklist/token-blacklist.module';
-import { GithubOauthModule } from './auth/github/github-oauth.module';
 import appConfig from './config/app.config';
 import { AppConfig } from './config/interfaces';
 
@@ -23,7 +22,6 @@ import { AppConfig } from './config/interfaces';
     CartModule,
     OrdersModule,
     TokenBlacklistModule,
-    GithubOauthModule,
     ConfigModule.forRoot({ isGlobal: true, load: [appConfig] }), //environment variables
     MongooseModule.forRootAsync({
       useFactory: async (configService: ConfigService<AppConfig>) => ({

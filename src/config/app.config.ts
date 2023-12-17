@@ -19,6 +19,12 @@ export default (): AppConfig => ({
       clientSecret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
       callbackURL: process.env.GITHUB_OAUTH_CALLBACK_URL,
     },
+    auth0: {
+      clientId: process.env.AUTH0_OAUTH_CLIENT_ID,
+      clientSecret: process.env.AUTH0_OAUTH_CLIENT_SECRET,
+      callbackURL: process.env.AUTH0_OAUTH_CALLBACK_URL,
+      domain: process.env.AUTH0_OAUTH_DOMAIN,
+    },
   },
 
   cookie: {

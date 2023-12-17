@@ -5,7 +5,7 @@
   username: String,
   email: String,
   password: String,
-  profilePic: String,
+  picture: String,
   address: {
     street: String,
     city: String,

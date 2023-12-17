@@ -7,11 +7,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TokenBlacklistModule } from 'src/token-blacklist/token-blacklist.module';
 import { LocalStrategy } from './local/local-auth.strategy';
 import { AppConfig } from 'src/config/interfaces';
+import { GithubOauthModule } from './github/github-oauth.module';
+import { Auth0Module } from './auth0/auth0.module';
 
 @Module({
   imports: [
     ConfigModule,
     UsersModule,
+    GithubOauthModule,
+    Auth0Module,
     TokenBlacklistModule,
     JwtModule.registerAsync({
       global: true,

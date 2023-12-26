@@ -58,4 +58,10 @@ export class ProductsService {
   async remove(product_id: string) {
     return this.productModel.findByIdAndRemove(product_id).exec();
   }
+
+  async removeAsUser(userID: string, product_id: string) {
+    return this.productModel
+      .findOneAndRemove({ userID: new Types.ObjectId(userID), _id: product_id })
+      .exec();
+  }
 }

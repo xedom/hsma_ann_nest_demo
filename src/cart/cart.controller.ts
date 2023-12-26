@@ -14,17 +14,16 @@ import { CartService } from './cart.service';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { ItemDto } from './dto/item.dto copy';
 
+@UseGuards(AuthGuard)
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @UseGuards(AuthGuard)
   @Get()
   async getUserCart(@Request() req) {
     return await this.cartService.findOne(req.user.sub);
   }
 
-  @UseGuards(AuthGuard)
   @Post('items')
   async addItems(@Request() req, @Body() itemDto: ItemDto | ItemDto[]) {
     return this.cartService.addItems(
@@ -33,7 +32,6 @@ export class CartController {
     );
   }
 
-  @UseGuards(AuthGuard)
   @Put('items/:id')
   async updateCartItem(
     @Request() req,
@@ -43,19 +41,16 @@ export class CartController {
     return this.cartService.updateCartItem(req.user.sub, itemID, updateCartDto);
   }
 
-  @UseGuards(AuthGuard)
   @Delete('items/:id')
   async deleteCartItem(@Request() req, @Param('id') itemID: string) {
     return this.cartService.deleteCartItem(req.user.sub, itemID);
   }
 
-  @UseGuards(AuthGuard)
   @Delete()
   async clearCart(@Request() req) {
     return this.cartService.clear(req.user.sub);
   }
 
-  @UseGuards(AuthGuard)
   @Post('checkout')
   async checkout(@Request() req) {
     return this.cartService.checkout(req.user.sub);

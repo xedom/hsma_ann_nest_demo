@@ -19,7 +19,10 @@ import { AuthGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HttpService } from '@nestjs/axios';
 import { UserRole } from './schemas/user.schema';
+import { RolesGuard } from './roles.guard';
+import { Roles } from './roles.decorator';
 
+@UseGuards(RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -27,10 +30,14 @@ export class UsersController {
     private readonly httpService: HttpService,
   ) {}
 
+  @Get()
+  getUsers() {
+    return this.usersService.getUsers();
+  }
+
   @UseGuards(AuthGuard)
   @Get('profile')
   async profile(@Request() req) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return this.usersService.getProfile(req.user.sub);
   }
 
@@ -44,34 +51,6 @@ export class UsersController {
     return this.usersService.getUserByID(userID);
   }
 
-  @Get()
-  getUsers() {
-    return this.usersService.getUsers();
-  }
-
-  @UseGuards(AuthGuard)
-  @Put(':id')
-  update(
-    @Request() req,
-    @Param('id') id: string,
-    @Body() updateUserDto: { role: UserRole },
-  ) {
-    if (req.user.role !== UserRole.ADMIN || req.user.sub === id)
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-
-    return this.usersService.update(id, updateUserDto);
-  }
-
-  @UseGuards(AuthGuard)
-  @Delete(':id') // TODO: add auth guard - only admin can delete users
-  remove(@Request() req, @Param('id') id: string) {
-    if (req.user.role !== UserRole.ADMIN && req.user.sub !== id)
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-
-    console.log('remove user', req.user);
-    return this.usersService.remove(id);
-  }
-
   @UseGuards(AuthGuard)
   @Post('settings')
   @UseInterceptors(FileInterceptor('image'))
@@ -79,6 +58,7 @@ export class UsersController {
   async uploadFile(@Request() req, @UploadedFile() image, @Body() body) {
     const userInfo = body;
 
+    // uploading the image to media.xed.im
     if (image) {
       const imageToUpload = {
         user: req.user.sub,
@@ -102,5 +82,26 @@ export class UsersController {
       statusCode: HttpStatus.PERMANENT_REDIRECT,
       url: process.env.FRONTEND_URL + '/settings',
     };
+  }
+
+  // --- admins ----------
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
+  @Put(':id')
+  update(@Param('id') id: string, @Body() dto: { role: UserRole }) {
+    return this.usersService.update(id, dto);
+  }
+
+  // --- special permissions ----------
+  @UseGuards(AuthGuard)
+  @Delete(':id') // TODO: add auth guard - only admin can delete users
+  remove(@Request() req, @Param('id') id: string) {
+    const isSelf = req.user.sub === id;
+    const isAdmin = req.user.role === UserRole.ADMIN;
+    if (!(isAdmin || isSelf))
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+
+    console.log('remove user', req.user);
+    return this.usersService.remove(id);
   }
 }

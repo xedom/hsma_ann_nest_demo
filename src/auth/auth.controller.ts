@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
   HttpException,
   HttpStatus,
   Post,
@@ -21,6 +20,7 @@ import { LocalAuthGuard } from './local/local-auth.guard';
 import { AuthGuard } from './auth.guard';
 import { AppConfig } from 'src/config/interfaces';
 
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -28,10 +28,8 @@ export class AuthController {
     private configService: ConfigService<AppConfig>,
   ) {}
 
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(ThrottlerGuard)
   @Redirect()
-  @Post('login_old')
+  @Post('old_login')
   async signIn(
     @Res({ passthrough: true }) res: Response,
     @Body() loginDto: LoginUserDto,
@@ -64,24 +62,23 @@ export class AuthController {
     };
   }
 
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(ThrottlerGuard)
   @UseGuards(LocalAuthGuard)
   @Redirect()
   @Post('login')
   async login(@Request() req, @Res() res: Response) {
-    if (!req.user.access_token)
-      throw new HttpException(
-        'Server error while logging in',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-
+    console.log('auth.controller.ts login req.user:', req.user);
     // source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
     res.cookie('user_jwt', req.user.access_token, {
       ...this.configService.get('cookie'),
       expires: new Date(
         Date.now() + parseInt(this.configService.get<string>('cookie.expires')),
       ),
+    });
+
+    console.log('auth.controller.ts login res.cookie:', {
+      ...req.user,
+      statusCode: HttpStatus.PERMANENT_REDIRECT,
+      url: process.env.FRONTEND_URL,
     });
 
     return {
@@ -91,19 +88,17 @@ export class AuthController {
     };
   }
 
-  @HttpCode(HttpStatus.OK)
-  @Post('register')
   @Redirect()
+  @Post('register')
   async signUp(@Body() registerDto: RegisterUserDto) {
     console.log('registerDto', registerDto);
     return {
       response: await this.authService.signUp(registerDto),
       statusCode: HttpStatus.PERMANENT_REDIRECT,
-      url: process.env.FRONTEND_URL + '/login',
+      url: `${process.env.FRONTEND_URL}/login`,
     };
   }
 
-  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @Redirect()
   @Get('logout')
@@ -121,7 +116,7 @@ export class AuthController {
     return {
       response: await this.authService.logout(token),
       statusCode: HttpStatus.PERMANENT_REDIRECT,
-      url: process.env.FRONTEND_URL + '/login',
+      url: `${process.env.FRONTEND_URL}/login`,
     };
   }
 }

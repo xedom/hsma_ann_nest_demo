@@ -22,6 +22,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = request.cookies['user_jwt'];
     // const token = this.extractTokenFromHeader(request);
+    console.log('token', token);
 
     if (!token) throw new UnauthorizedException('Token not found');
     if (await this.tokenBlacklistService.isTokenBlacklisted(token))

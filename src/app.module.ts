@@ -32,6 +32,9 @@ import { AppConfig } from './config/interfaces';
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
 export class AppModule {}

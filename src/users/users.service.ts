@@ -22,7 +22,7 @@ export class UsersService {
     private cartService: CartService,
   ) {}
 
-  async createWithCart(dto: User) {
+  async createWithCart(dto: Partial<User>) {
     const user = await this.userModel.create({ balance: 1000, ...dto });
     await this.cartService.create({ userID: user._id });
 
@@ -48,7 +48,7 @@ export class UsersService {
 
     if (user) return user;
 
-    return await this.userModel.create(userData);
+    return this.createWithCart(userData);
   }
 
   async findOneWithPassword(username: string, password: string) {
@@ -154,14 +154,19 @@ export class UsersService {
   }
 
   validateEmail(email: string): boolean {
-    return email.includes('@');
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return emailRegex.test(email);
   }
 
   validateUsername(username: string): boolean {
-    return username.replaceAll(' ', '').length > 3;
+    const usernameMinLength = 3;
+    const usernameRegex = /^[a-zA-Z]+(?:[_-][a-zA-Z0-9]+)*$/;
+    return username.length >= usernameMinLength && usernameRegex.test(username);
   }
 
   validatePassword(password: string): boolean {
-    return password.length > 2;
+    const passwordMinLength = 6;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
+    return password.length >= passwordMinLength && passwordRegex.test(password);
   }
 }

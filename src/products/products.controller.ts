@@ -46,61 +46,20 @@ export class ProductsController {
 
   @Get('user/:userID')
   findByUser(@Param('userID') userID: string) {
-    console.log('userID1', userID);
     return this.productsService.findByUser(userID);
   }
 
-  @Get(':_id')
-  findOneId(@Param('_id') _id: string) {
-    return this.productsService.findOneId(_id);
+  @Get(':id')
+  findOneId(@Param('id') id: string) {
+    return this.productsService.findOneId(id);
   }
 
   // --- vendors ----------
   @UseGuards(AuthGuard)
   @Roles(UserRole.VENDOR)
-  @Put(':_id')
-  async update(@Param('_id') _id: string, @Body() productData) {
-    return this.productsService.update(_id, productData);
-  }
-
-  @UseGuards(AuthGuard)
-  @Roles(UserRole.VENDOR)
-  @UseInterceptors(FileInterceptor('image'))
-  @Redirect()
-  @Post()
-  async create(@Request() req, @UploadedFile() image, @Body() body) {
-    if (req.user.role !== 'vendor')
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-
-    const productInfo = {
-      ...body,
-      userID: new Types.ObjectId(req.user.sub),
-    };
-
-    // upload image to media.xed.im
-    if (image) {
-      const imageToUpload = {
-        user: req.user.sub,
-        mimetype: image.mimetype,
-        buffer: image?.buffer.toString('base64'),
-      };
-
-      const { data } = await this.httpService
-        .post('https://media.xed.im/upload', imageToUpload, {
-          headers: { Authorization: `Bearer ${process.env.MEDIA_XED_TOKEN}` },
-        })
-        .toPromise();
-
-      productInfo.images = [data.url];
-    }
-
-    await this.productsService.create(productInfo);
-
-    return {
-      message: 'User updated',
-      statusCode: HttpStatus.PERMANENT_REDIRECT,
-      url: process.env.FRONTEND_URL + '/products',
-    };
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() productData) {
+    return this.productsService.update(id, productData);
   }
 
   // @UseGuards(AuthGuard)
@@ -125,12 +84,12 @@ export class ProductsController {
     // }
     // ),
   )
-  @Redirect()
   @Post('/test')
   async create2(@Request() req, @UploadedFiles() files, @Body() body) {
     // if (req.user.role !== 'vendor')
     //   throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 
+    console.log('image----');
     console.log('image', files);
 
     const productInfo = {
@@ -146,6 +105,46 @@ export class ProductsController {
         user: req.user.sub,
         mimetype: files.mimetype,
         buffer: files?.buffer.toString('base64'),
+      };
+
+      const { data } = await this.httpService
+        .post('https://media.xed.im/upload', imageToUpload, {
+          headers: { Authorization: `Bearer ${process.env.MEDIA_XED_TOKEN}` },
+        })
+        .toPromise();
+
+      productInfo.images = [data.url];
+    }
+
+    await this.productsService.create(productInfo);
+
+    return {
+      message: 'User updated',
+      statusCode: HttpStatus.PERMANENT_REDIRECT,
+      url: process.env.FRONTEND_URL + '/products',
+    };
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.VENDOR)
+  @UseInterceptors(FileInterceptor('image'))
+  @Redirect()
+  @Post()
+  async create(@Request() req, @UploadedFile() image, @Body() body) {
+    if (req.user.role !== 'vendor')
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+
+    const productInfo = {
+      ...body,
+      userID: new Types.ObjectId(req.user.sub),
+    };
+
+    // upload image to media.xed.im
+    if (image) {
+      const imageToUpload = {
+        user: req.user.sub,
+        mimetype: image.mimetype,
+        buffer: image?.buffer.toString('base64'),
       };
 
       const { data } = await this.httpService

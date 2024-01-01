@@ -12,6 +12,7 @@ export class JwtAuthService {
     const payload: JwtPayload = {
       sub: id,
       username,
+      role: user.role,
       photo: photos?.[0],
     };
 

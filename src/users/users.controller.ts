@@ -22,7 +22,7 @@ import { UserRole } from './schemas/user.schema';
 import { RolesGuard } from './roles.guard';
 import { Roles } from './roles.decorator';
 
-@UseGuards(RolesGuard)
+// @UseGuards(RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -30,28 +30,31 @@ export class UsersController {
     private readonly httpService: HttpService,
   ) {}
 
+  @UseGuards(RolesGuard)
   @Get()
   getUsers() {
     return this.usersService.getUsers();
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('profile')
   async profile(@Request() req) {
     return this.usersService.getProfile(req.user.sub);
   }
 
+  @UseGuards(RolesGuard)
   @Get(':username')
   getUser(@Param('username') username: string) {
     return this.usersService.getUser(username);
   }
 
+  @UseGuards(RolesGuard)
   @Get('id/:userID')
   getUserByID(@Param('userID') userID: string) {
     return this.usersService.getUserByID(userID);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post('settings')
   @UseInterceptors(FileInterceptor('image'))
   @Redirect()
@@ -85,15 +88,16 @@ export class UsersController {
   }
 
   // --- admins ----------
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: { role: UserRole }) {
+    console.log('update user', id, dto);
     return this.usersService.update(id, dto);
   }
 
   // --- special permissions ----------
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Delete(':id') // TODO: add auth guard - only admin can delete users
   remove(@Request() req, @Param('id') id: string) {
     const isSelf = req.user.sub === id;

@@ -13,5 +13,6 @@ export type JwtPayload = {
   exp?: number;
 
   username: string;
+  role: string;
   photo?: string;
 };

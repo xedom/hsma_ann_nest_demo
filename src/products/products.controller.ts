@@ -25,7 +25,7 @@ import { RolesGuard } from 'src/users/roles.guard';
 import { Roles } from 'src/users/roles.decorator';
 import { UserRole } from 'src/users/schemas/user.schema';
 
-@UseGuards(RolesGuard)
+// @UseGuards(RolesGuard)
 @Controller('products')
 export class ProductsController {
   constructor(
@@ -55,14 +55,14 @@ export class ProductsController {
   }
 
   // --- vendors ----------
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.VENDOR)
   @Put(':id')
   async update(@Param('id') id: string, @Body() productData) {
     return this.productsService.update(id, productData);
   }
 
-  // @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard, RolesGuard)
   // @Roles(UserRole.VENDOR)
   @UseInterceptors(
     AnyFilesInterceptor(),
@@ -125,7 +125,7 @@ export class ProductsController {
     };
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.VENDOR)
   @UseInterceptors(FileInterceptor('image'))
   @Redirect()
@@ -166,7 +166,7 @@ export class ProductsController {
   }
 
   // --- admins ----------
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.VENDOR)
   @Delete(':_id')
   async remove(@Request() req, @Param('_id') _id: string) {

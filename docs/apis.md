@@ -11,7 +11,6 @@
 - `GET /auth/github/callback` To handle the callback from GitHub OAuth.
 - `GET /auth/auth0` To log the user in using Auth0.
 - `GET /auth/auth0/callback` To handle the callback from Auth0.
-
 - `GET /users` To fetch a list of users.
 - `GET /users/{username}` To fetch the details of a specific user.
 - `GET /users/id/{user_id}` To fetch the details of a specific user.

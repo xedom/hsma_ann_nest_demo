@@ -160,13 +160,15 @@ export class UsersService {
 
   validateUsername(username: string): boolean {
     const usernameMinLength = 3;
-    const usernameRegex = /^[a-zA-Z]+(?:[_-][a-zA-Z0-9]+)*$/;
+    // const usernameRegex = /^[a-zA-Z]+(?:[_-][a-zA-Z0-9]+)*$/;
+    const usernameRegex = /^[a-zA-Z0-9-_]{3,}$/;
     return username.length >= usernameMinLength && usernameRegex.test(username);
   }
 
   validatePassword(password: string): boolean {
     const passwordMinLength = 6;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
+    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
+    const passwordRegex = /^.{6,}$/;
     return password.length >= passwordMinLength && passwordRegex.test(password);
   }
 }

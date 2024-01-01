@@ -7,6 +7,7 @@ export interface User {
   providerId: string;
 
   username: string;
+  role: string;
 
   photos: string[];
 }

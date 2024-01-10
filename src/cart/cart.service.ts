@@ -49,11 +49,26 @@ export class CartService {
       ...item,
       productID: new Types.ObjectId(item.productID),
     }));
+    console.log('items', items);
 
-    return this.cartModel.updateOne(
-      { userID: new Types.ObjectId(userID) },
-      { $push: { items: { $each: items } } },
-    );
+    // check if cart exists
+    const cart = await this.cartModel.findOne({
+      userID: new Types.ObjectId(userID),
+    });
+    if (cart) {
+      console.log('edit cart', cart);
+      return this.cartModel.updateOne(
+        { userID: new Types.ObjectId(userID) },
+        { $push: { items: { $each: items } } },
+      );
+    } else {
+      console.log('creating cart', cart);
+      return this.cartModel.create({
+        userID: new Types.ObjectId(userID),
+        items: items,
+        total: 0,
+      });
+    }
   }
 
   async updateCartItem(

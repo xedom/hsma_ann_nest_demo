@@ -26,6 +26,8 @@ export class CartController {
 
   @Post('items')
   async addItems(@Request() req, @Body() itemDto: ItemDto | ItemDto[]) {
+    console.log('itemDto', itemDto);
+    console.log('itemDto', req.user.sub);
     return this.cartService.addItems(
       req.user.sub,
       Array.isArray(itemDto) ? itemDto : [itemDto],

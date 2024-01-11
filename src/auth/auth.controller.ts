@@ -84,7 +84,7 @@ export class AuthController {
     return {
       ...req.user,
       statusCode: HttpStatus.PERMANENT_REDIRECT,
-      url: `${process.env.FRONTEND_URL}/dashboard}`,
+      url: `${process.env.FRONTEND_URL}`,
     };
   }
 

@@ -53,8 +53,11 @@ export class UsersService {
 
   async findOneWithPassword(username: string, password: string) {
     const user = await this.userModel.findOne({ username }).exec();
+    if (!user) throw new HttpException('Invalid username or password', 400);
+    if (user.password === undefined)
+      throw new HttpException('Invalid username or password', 400);
     const passHash = this.comparePasswords(password, user.password);
-    if (!passHash) throw new HttpException('Invalid password', 400);
+    if (!passHash) throw new HttpException('Invalid username or password', 400);
     return user;
   }
 

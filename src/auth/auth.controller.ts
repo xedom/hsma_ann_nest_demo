@@ -75,16 +75,16 @@ export class AuthController {
       ),
     });
 
-    console.log('auth.controller.ts login res.cookie:', {
-      ...req.user,
-      statusCode: HttpStatus.PERMANENT_REDIRECT,
-      url: process.env.FRONTEND_URL,
-    });
+    // console.log('auth.controller.ts login res.cookie:', {
+    //   ...req.user,
+    //   statusCode: HttpStatus.PERMANENT_REDIRECT,
+    //   url: process.env.FRONTEND_URL,
+    // });
 
     return {
       ...req.user,
       statusCode: HttpStatus.PERMANENT_REDIRECT,
-      url: process.env.FRONTEND_URL,
+      url: `${process.env.FRONTEND_URL}/dashboard}`,
     };
   }
 
